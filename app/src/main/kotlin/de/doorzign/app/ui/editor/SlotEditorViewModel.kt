@@ -11,6 +11,7 @@ import de.doorzign.app.api.model.Display
 import de.doorzign.app.core.ApiException
 import de.doorzign.app.core.SlotContent
 import de.doorzign.app.core.SystemFeatures
+import de.doorzign.app.core.TextLimits
 import de.doorzign.app.core.apiCall
 import de.doorzign.app.core.renderPreview
 import de.doorzign.app.core.uploadMedia
@@ -71,6 +72,8 @@ class SlotEditorViewModel(
     val preview = MutableStateFlow<ByteArray?>(null)
     val previewError = MutableStateFlow<String?>(null)
     val previewBusy = MutableStateFlow(false)
+    /** Ein Text ist zu lang: keine Anfrage, letzte gültige Vorschau bleibt gedimmt stehen (ui-spec §4). */
+    val previewStale = MutableStateFlow(false)
     val saving = MutableStateFlow(false)
     val uploading = MutableStateFlow(false)
     val error = MutableStateFlow<String?>(null)
@@ -179,7 +182,7 @@ class SlotEditorViewModel(
                 val r = apiCall { conn.api.calendars.checkCalendarUrl(displayId, CheckCalendarUrlRequest(URI(url))) }
                 if (r.ok) CalendarCheck.Ok(r.eventCount) else CalendarCheck.Failed(r.error ?: Texts.get(R.string.calendar_check_failed))
             } catch (e: ApiException) {
-                CalendarCheck.Failed(Texts.error(e))
+                CalendarCheck.Failed(calendarError(e))
             }
         }
     }
@@ -190,6 +193,15 @@ class SlotEditorViewModel(
         var content = draft.value?.content ?: return
         if (content is SlotContent.Calendar) {
             content = content.copy(url = content.url?.let { normalizeIcalUrl(it) ?: it })
+        }
+        // Vertragsgrenzen vorab prüfen, statt sehenden Auges in 422 zu laufen (Edge-Web erlaubt längere Texte)
+        if (content is SlotContent.Text) {
+            val over = TextLimits.exceeded(content)
+            if (over.isNotEmpty()) {
+                error.value = Texts.get(R.string.editor_text_too_long)
+                fieldErrors.value = emptyMap()
+                return
+            }
         }
         saving.value = true
         error.value = null
@@ -202,7 +214,11 @@ class SlotEditorViewModel(
             } catch (e: ApiException) {
                 when {
                     e.status == 412 || e.code == "precondition_failed" -> conflict.value = true
-                    else -> { error.value = Texts.error(e); fieldErrors.value = e.fields }
+                    else -> {
+                        val ical = content is SlotContent.Calendar && (content as SlotContent.Calendar).source == SlotContent.Calendar.Source.ICAL
+                        error.value = if (ical) calendarError(e) else Texts.error(e)
+                        fieldErrors.value = e.fields
+                    }
                 }
             } finally {
                 saving.value = false
@@ -222,12 +238,20 @@ class SlotEditorViewModel(
                 if (c is SlotContent.Calendar && c.url.isNullOrBlank() && c.source == SlotContent.Calendar.Source.ICAL) {
                     preview.value = null; return@collectLatest
                 }
+                if (c is SlotContent.Text && TextLimits.exceeded(c).isNotEmpty()) {
+                    // Server antwortet sonst mit 422 – erst nach dem Kürzen wieder anfragen
+                    previewStale.value = true
+                    previewError.value = null
+                    return@collectLatest
+                }
+                previewStale.value = false
                 previewBusy.value = true
                 try {
                     preview.value = conn.session.renderPreview(displayId, slot, c)
                     previewError.value = null
                 } catch (e: ApiException) {
-                    previewError.value = Texts.error(e)
+                    // 422 mit fields: Hinweis zum betroffenen Feld statt allgemeinem Vorschaufehler
+                    previewError.value = if (e.status == 422 && e.fields.isNotEmpty()) fieldHint(e.fields) else Texts.error(e)
                 } finally {
                     previewBusy.value = false
                 }
@@ -235,7 +259,27 @@ class SlotEditorViewModel(
         }
     }
 
+    /** `unlicensed` im Kalenderkontext meint die Kalenderlizenz, sonst die Displaylizenz (Texts.error). */
+    private fun calendarError(e: ApiException): String =
+        if (e.code == "unlicensed") Texts.get(R.string.err_unlicensed_calendar) else Texts.error(e)
+
+    private fun fieldHint(fields: Map<String, List<String>>): String =
+        fields.entries.joinToString("\n") { (key, msgs) ->
+            val name = key.removePrefix("content.")
+            val label = FIELD_LABELS[name]?.let { Texts.get(it) } ?: name
+            Texts.get(R.string.preview_field_error, label, msgs.joinToString())
+        }
+
     companion object {
+        /** Anzeigenamen der Inhaltsfelder für Feldhinweise aus 422-Antworten. */
+        private val FIELD_LABELS = mapOf(
+            "title" to R.string.text_title, "headline" to R.string.text_headline,
+            "subHeadline" to R.string.text_subheadline, "message" to R.string.text_message,
+            "color" to R.string.color_text, "bg" to R.string.color_bg,
+            "messageColor" to R.string.color_message, "messageBg" to R.string.color_message_bg,
+            "url" to R.string.calendar_url, "source" to R.string.calendar_source,
+        )
+
         /** Standardfarben einer neuen Text-Ansicht (ui-spec §4). */
         val DEFAULT_TEXT = SlotContent.Text(
             color = SlotContent.Color.BLACK, bg = SlotContent.Color.WHITE,

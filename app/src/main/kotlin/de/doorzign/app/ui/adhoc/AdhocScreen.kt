@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.doorzign.app.R
+import de.doorzign.app.core.TextLimits
 import de.doorzign.app.api.infrastructure.Success
 import de.doorzign.app.api.model.Adhoc
 import de.doorzign.app.api.model.StartAdhocRequest
@@ -129,10 +130,10 @@ fun AdhocScreen(conn: Connection, displayId: String, onDone: () -> Unit) {
                     }
                     Text(stringResource(R.string.adhoc_replace_hint), style = MaterialTheme.typography.bodySmall)
                 }
-                Field(stringResource(R.string.text_title), t.title, 50, fields["content.title"]) { v -> vm.update { it.copy(title = v) } }
-                Field(stringResource(R.string.text_headline), t.headline, 75, fields["content.headline"]) { v -> vm.update { it.copy(headline = v) } }
-                Field(stringResource(R.string.text_subheadline), t.subHeadline, 50, fields["content.subHeadline"]) { v -> vm.update { it.copy(subHeadline = v) } }
-                Field(stringResource(R.string.text_message), t.message, 100, fields["content.message"]) { v -> vm.update { it.copy(message = v) } }
+                Field(stringResource(R.string.text_title), t.title, TextLimits.TITLE, fields["content.title"]) { v -> vm.update { it.copy(title = v) } }
+                Field(stringResource(R.string.text_headline), t.headline, TextLimits.HEADLINE, fields["content.headline"]) { v -> vm.update { it.copy(headline = v) } }
+                Field(stringResource(R.string.text_subheadline), t.subHeadline, TextLimits.SUB_HEADLINE, fields["content.subHeadline"]) { v -> vm.update { it.copy(subHeadline = v) } }
+                Field(stringResource(R.string.text_message), t.message, TextLimits.MESSAGE, fields["content.message"]) { v -> vm.update { it.copy(message = v) } }
                 ColorRow(stringResource(R.string.color_text), t.color) { c -> vm.update { it.copy(color = c) } }
                 ColorRow(stringResource(R.string.color_bg), t.bg) { c -> vm.update { it.copy(bg = c) } }
                 ColorRow(stringResource(R.string.color_message), t.messageColor) { c -> vm.update { it.copy(messageColor = c) } }

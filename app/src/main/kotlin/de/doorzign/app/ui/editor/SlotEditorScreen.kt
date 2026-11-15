@@ -58,6 +58,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -69,6 +71,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.doorzign.app.R
+import de.doorzign.app.core.TextLimits
 import de.doorzign.app.core.SlotContent
 import de.doorzign.app.data.Connection
 import de.doorzign.app.ui.common.BusyButton
@@ -166,10 +169,16 @@ private fun PreviewBox(vm: SlotEditorViewModel) {
     val png by vm.preview.collectAsStateWithLifecycle()
     val busy by vm.previewBusy.collectAsStateWithLifecycle()
     val err by vm.previewError.collectAsStateWithLifecycle()
+    val stale by vm.previewStale.collectAsStateWithLifecycle()
     val bitmap = remember(png) { png?.let { BitmapFactory.decodeByteArray(it, 0, it.size)?.asImageBitmap() } }
     Box(Modifier.fillMaxWidth().aspectRatio(4f / 3f).background(Color(0xFFEEEEEE)), contentAlignment = Alignment.Center) {
-        if (bitmap != null) Image(bitmap, stringResource(R.string.editor_preview), Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
-        else if (!busy) Text(stringResource(R.string.editor_no_preview), style = MaterialTheme.typography.bodySmall)
+        if (bitmap != null) Image(bitmap, stringResource(R.string.editor_preview), Modifier.fillMaxSize().alpha(if (stale) 0.35f else 1f),
+            contentScale = ContentScale.Fit)
+        when {
+            stale -> Text(stringResource(R.string.editor_preview_after_shorten), style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f), RoundedCornerShape(4.dp)).padding(8.dp))
+            bitmap == null && !busy -> Text(stringResource(R.string.editor_no_preview), style = MaterialTheme.typography.bodySmall)
+        }
         if (busy) CircularProgressIndicator(Modifier.size(32.dp))
     }
     err?.let { Text(it, color = StatusColors.Bad, style = MaterialTheme.typography.bodySmall) }
@@ -191,11 +200,27 @@ private fun TypeSelector(type: SlotType, calendar: Boolean, deactivate: Boolean,
     }
 }
 
+/**
+ * Feld mit Vertragsgrenze. Neue Eingaben werden auf [max] begrenzt; ein vom Backend geladener,
+ * bereits zu langer Text bleibt erhalten, darf nur kürzer werden und wird als Fehler markiert.
+ */
 @Composable
 private fun LimitedField(label: String, value: String, max: Int, error: List<String>?, onChange: (String) -> Unit) {
+    val over = value.length > max
     OutlinedTextField(
-        value = value, onValueChange = { onChange(it.take(max)) }, label = { Text(label) },
-        supportingText = { Text(error?.joinToString() ?: "${value.length} / $max") }, isError = error != null,
+        value = value,
+        onValueChange = { new ->
+            when {
+                new.length <= max -> onChange(new)
+                new.length <= value.length -> onChange(new) // zu lang geladen: kürzen/ändern erlaubt, wachsen nicht
+                else -> onChange(new.take(maxOf(max, value.length)))
+            }
+        },
+        label = { Text(label) },
+        supportingText = {
+            Text(error?.joinToString() ?: if (over) stringResource(R.string.field_too_long, value.length, max) else "${value.length} / $max")
+        },
+        isError = error != null || over,
         modifier = Modifier.fillMaxWidth(),
     )
 }
@@ -203,10 +228,10 @@ private fun LimitedField(label: String, value: String, max: Int, error: List<Str
 @Composable
 private fun TextEditor(t: SlotContent.Text, vm: SlotEditorViewModel) {
     val fields by vm.fieldErrors.collectAsStateWithLifecycle()
-    LimitedField(stringResource(R.string.text_title), t.title, 50, fields["title"]) { v -> vm.updateText { it.copy(title = v) } }
-    LimitedField(stringResource(R.string.text_headline), t.headline, 75, fields["headline"]) { v -> vm.updateText { it.copy(headline = v) } }
-    LimitedField(stringResource(R.string.text_subheadline), t.subHeadline, 50, fields["subHeadline"]) { v -> vm.updateText { it.copy(subHeadline = v) } }
-    LimitedField(stringResource(R.string.text_message), t.message, 100, fields["message"]) { v -> vm.updateText { it.copy(message = v) } }
+    LimitedField(stringResource(R.string.text_title), t.title, TextLimits.TITLE, fields["title"]) { v -> vm.updateText { it.copy(title = v) } }
+    LimitedField(stringResource(R.string.text_headline), t.headline, TextLimits.HEADLINE, fields["headline"]) { v -> vm.updateText { it.copy(headline = v) } }
+    LimitedField(stringResource(R.string.text_subheadline), t.subHeadline, TextLimits.SUB_HEADLINE, fields["subHeadline"]) { v -> vm.updateText { it.copy(subHeadline = v) } }
+    LimitedField(stringResource(R.string.text_message), t.message, TextLimits.MESSAGE, fields["message"]) { v -> vm.updateText { it.copy(message = v) } }
     ColorRow(stringResource(R.string.color_text), t.color) { c -> vm.updateText { it.copy(color = c) } }
     ColorRow(stringResource(R.string.color_bg), t.bg) { c -> vm.updateText { it.copy(bg = c) } }
     ColorRow(stringResource(R.string.color_message), t.messageColor) { c -> vm.updateText { it.copy(messageColor = c) } }
@@ -325,5 +350,6 @@ private fun CalendarEditor(cal: SlotContent.Calendar, vm: SlotEditorViewModel) {
             is CalendarCheck.Failed -> Text(c.message, color = StatusColors.Bad)
             else -> Unit
         }
-    }
+    }    // 422 fields.source: iCal nur auf Ansicht 1 (Vertrag 1.2.4)
+    fields["source"]?.let { Text(it.joinToString(), color = StatusColors.Bad, style = MaterialTheme.typography.bodySmall) }
 }

@@ -21,7 +21,8 @@ object Texts {
     fun get(@StringRes id: Int, vararg args: Any): String = res.getString(id, *args)
 
     fun error(t: Throwable): String = when (t) {
-        is ApiException -> t.serverMessage ?: local(t)
+        // Bekannte Fachcodes vor der Servermeldung, damit die Meldung zur Situation passt (Vertrag 1.2.4)
+        is ApiException -> if (t.code == "unlicensed") get(R.string.err_unlicensed) else t.serverMessage ?: local(t)
         is PairingException -> pairing(t.reason)
         is ImagePrep.TooLarge -> get(R.string.err_image_too_large)
         is ImagePrep.Unreadable -> get(R.string.err_image_unreadable)

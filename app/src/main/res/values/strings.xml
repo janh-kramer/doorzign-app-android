@@ -73,6 +73,12 @@
     <string name="filter_battery">Akku schwach</string>
     <string name="filter_error">Fehler</string>
     <string name="filter_transfer">Übertragung offen</string>
+    <string name="err_unlicensed">Für dieses Display ist keine gültige Lizenz vorhanden.</string>
+    <string name="err_unlicensed_calendar">Für dieses Display ist keine Kalenderlizenz vorhanden.</string>
+    <string name="field_too_long">%1$d / %2$d – zu lang, bitte kürzen</string>
+    <string name="editor_text_too_long">Einige Texte sind länger als erlaubt. Bitte die markierten Felder kürzen.</string>
+    <string name="editor_preview_after_shorten">Vorschau nach dem Kürzen</string>
+    <string name="preview_field_error">%1$s: %2$s</string>
     <string name="slot_no_preview">Keine Vorschau</string>
     <string name="slot_preview_cd">Vorschau Ansicht %1$d</string>
     <string name="battery_cd">Akku</string>
@@ -173,6 +179,7 @@
     <string name="image_fit_crop">Zuschneiden</string>
     <string name="image_dither">Dithering</string>
     <string name="calendar_name">Name</string>
+    <string name="calendar_source">Kalenderquelle</string>
     <string name="calendar_url">iCal-URL</string>
     <string name="calendar_url_help">webcal://-Adressen werden automatisch umgewandelt</string>
     <string name="calendar_timezone">Zeitzone</string>

@@ -55,6 +55,17 @@ class MiscTest {
         val unknown = ApiException.fromBody(500, "<html>")
         assertEquals("internal", unknown.code)
     }
+
+    /** Edge-Web erlaubt längere Texte als der Vertrag – Lesen darf daran nicht scheitern. */
+    @Test fun ueberlangerTextWirdAngenommen() {
+        val long = "x".repeat(200)
+        val json = """{"slot":2,"transferred":true,"editable":true,"etag":"\"e\"","previewEtag":null,"content":{"type":"text","title":"${"t".repeat(120)}","headline":"${"h".repeat(160)}","subHeadline":"$long","message":"$long"}}"""
+        val s = Serializer.kotlinxSerializationJson.decodeFromString<Slot>(json)
+        val t = assertIs<SlotContent.Text>(s.content)
+        assertEquals(120, t.title.length)
+        assertEquals(setOf("title", "headline", "subHeadline", "message"), TextLimits.exceeded(t).keys)
+        assertTrue(TextLimits.exceeded(SlotContent.Text(title = "x".repeat(50))).isEmpty())
+    }
 }
 
 class ScheduleRulesTest {
