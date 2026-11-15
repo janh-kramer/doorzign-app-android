@@ -128,6 +128,8 @@ fun LoginScreen(notice: String?) {
             notice?.let { ErrorCard(it) }
             error?.let { ErrorCard(it) }
             (sso as? SsoStatus.Failed)?.let { ErrorCard(it.message) }
+            if (sso is SsoStatus.Cancelled) Text(stringResource(R.string.sso_cancelled), style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (sso is SsoStatus.Working) LinearProgressIndicator(Modifier.fillMaxWidth())
 
             when (val p = providers) {

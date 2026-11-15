@@ -21,5 +21,8 @@ class PendingSsoStore(context: Context) {
         return p
     }
 
+    /** Startzeit eines offenen Vorgangs, sonst null (ohne ihn zu verbrauchen). */
+    fun pendingSince(): Long? = if (prefs.contains("state")) prefs.getLong("at", 0) else null
+
     fun clear() { prefs.edit().clear().commit() }
 }

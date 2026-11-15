@@ -54,6 +54,8 @@ sealed interface SsoStatus {
     data object Idle : SsoStatus
     data object Working : SsoStatus
     data class Failed(val message: String) : SsoStatus
+    /** Nutzer kam ohne Callback aus dem Browser zurück (z. B. Tab geschlossen, IdP-Fehler) – nur Hinweis, kein Fehler. */
+    data object Cancelled : SsoStatus
 }
 
 /**
@@ -194,7 +196,11 @@ class SessionManager(
             .addQueryParameter("app_version", appInfo.version)
             .build()
         _sso.value = SsoStatus.Idle
-        CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(activity, Uri.parse(url.toString()))
+        val tab = CustomTabsIntent.Builder().setShowTitle(true).build()
+        // Ephemere Sitzung ohne vorhandene Zeitwart-Cookies (sonst endet der Abschluss mit access_denied).
+        // Extra aus androidx.browser 1.9 (EXTRA_ENABLE_EPHEMERAL_BROWSING); Browser ohne Unterstützung ignorieren es.
+        tab.intent.putExtra(EXTRA_EPHEMERAL, true)
+        tab.launchUrl(activity, Uri.parse(url.toString()))
     }
 
     /** `doorzign://auth/callback?code=…&state=…` bzw. `?error=…`. */
@@ -220,7 +226,9 @@ class SessionManager(
                         _state.value = AppState.SignedIn(conn)
                         refreshSystem()
                     } catch (e: ApiException) {
-                        _sso.value = SsoStatus.Failed(Texts.error(e))
+                        // invalid_grant: Code abgelaufen (60 s), schon benutzt oder Verifier falsch
+                        _sso.value = SsoStatus.Failed(
+                            if (e.code == "invalid_grant") Texts.get(R.string.sso_code_invalid) else Texts.error(e))
                     }
                 }
             }
@@ -229,11 +237,22 @@ class SessionManager(
 
     fun clearSsoStatus() { _sso.value = SsoStatus.Idle }
 
+    /**
+     * Rückkehr in die App ohne `doorzign://auth/callback` (parity.md: scheitert der Login beim IdP, kommt kein
+     * Callback). State und Verifier werden verworfen; nur ein frischer Vorgang erzeugt den Hinweis „abgebrochen“.
+     */
+    fun onResumedWithoutSsoCallback() {
+        val since = ssoStore.pendingSince() ?: return
+        ssoStore.clear()
+        if (System.currentTimeMillis() - since <= SSO_MAX_AGE_MS && _sso.value !is SsoStatus.Working) _sso.value = SsoStatus.Cancelled
+    }
+
     private fun ssoErrorText(code: String) = when (code) {
         "access_denied" -> Texts.get(R.string.sso_denied)
         "provider_error" -> Texts.get(R.string.sso_provider_error)
         "expired" -> Texts.get(R.string.sso_expired)
-        else -> Texts.get(R.string.sso_failed_code, code)
+        "invalid_request" -> Texts.get(R.string.sso_invalid_request)
+        else -> Texts.get(R.string.sso_provider_error) // provider_error und Unbekanntes (glossary.md)
     }
 
     private fun instanceDir(instanceId: String) =
@@ -242,5 +261,6 @@ class SessionManager(
     private companion object {
         const val INSTANCES = "instances"
         const val SSO_MAX_AGE_MS = 10 * 60 * 1000L
+        const val EXTRA_EPHEMERAL = "androidx.browser.customtabs.extra.ENABLE_EPHEMERAL_BROWSING"
     }
 }

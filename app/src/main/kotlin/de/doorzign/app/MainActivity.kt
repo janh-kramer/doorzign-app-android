@@ -12,11 +12,20 @@ import de.doorzign.app.ui.theme.DoorZignTheme
 class MainActivity : ComponentActivity() {
     private val container get() = (application as DoorZignApp).container
 
+    /** Wurde seit dem letzten onResume ein SSO-Callback zugestellt? (onNewIntent läuft vor onResume) */
+    private var ssoCallbackSeen = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         if (savedInstanceState == null) handleIntent(intent)
         setContent { DoorZignTheme { AppRoot() } }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!ssoCallbackSeen) container.sessions.onResumedWithoutSsoCallback()
+        ssoCallbackSeen = false
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -29,7 +38,7 @@ class MainActivity : ComponentActivity() {
         val uri = intent?.data ?: return
         if (uri.scheme != "doorzign") return
         when (uri.host) {
-            "auth" -> if (uri.path == "/callback") container.sessions.handleSsoCallback(uri)
+            "auth" -> if (uri.path == "/callback") { ssoCallbackSeen = true; container.sessions.handleSsoCallback(uri) }
             "edge", "cloud" -> runCatching { PairingUri.parse(uri.toString()) }
                 .onSuccess { container.sessions.pendingPairing.value = it }
         }
