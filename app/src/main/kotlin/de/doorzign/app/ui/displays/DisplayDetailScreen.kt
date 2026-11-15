@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -25,7 +26,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -146,8 +146,30 @@ fun DisplayDetailScreen(
                     HorizontalPager(pager, contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 32.dp),
                         pageSpacing = 12.dp) { page ->
                         val slot = d.slots[page]
-                        SlotCard(conn, displayId, slot, active = slot.slot == display.activeSlot,
-                            previewEtag = display.slots.firstOrNull { it.slot == slot.slot }?.previewEtag ?: slot.previewEtag)
+                        val active = slot.slot == display.activeSlot
+                        // Menü nur mit erlaubten Aktionen; ohne Aktion bleibt die Karte ein reines Bild.
+                        val canShow = d.level.atLeast(Level.SWITCH) && !active && slot.content !is SlotContent.Deactivated
+                        val canEdit = d.level == Level.EDIT && slot.editable
+                        var slotMenu by remember { mutableStateOf(false) }
+                        Box {
+                            SlotCard(conn, displayId, slot, active = active,
+                                previewEtag = display.slots.firstOrNull { it.slot == slot.slot }?.previewEtag ?: slot.previewEtag,
+                                onClick = if (canShow || canEdit) ({ slotMenu = true }) else null)
+                            DropdownMenu(slotMenu, { slotMenu = false }) {
+                                if (canShow) DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.slot_show_n, slot.slot)) },
+                                    leadingIcon = { Icon(Icons.Default.Visibility, null) },
+                                    enabled = !busy,
+                                    onClick = { slotMenu = false; vm.showSlot(slot.slot) },
+                                )
+                                if (canShow && canEdit) HorizontalDivider()
+                                if (canEdit) DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.editor_title, slot.slot)) },
+                                    leadingIcon = { Icon(Icons.Default.Edit, null) },
+                                    onClick = { slotMenu = false; onEditSlot(slot.slot) },
+                                )
+                            }
+                        }
                     }
                     Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.Center) {
                         d.slots.forEachIndexed { i, sl ->
@@ -161,22 +183,9 @@ fun DisplayDetailScreen(
 
                     // Aktionen
                     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (current != null && d.level.atLeast(Level.SWITCH)) {
-                            val canShow = current.slot != display.activeSlot && current.content !is SlotContent.Deactivated
-                            Button(onClick = { vm.showSlot(current.slot) }, enabled = canShow && !busy, modifier = Modifier.fillMaxWidth()) {
-                                Icon(Icons.Default.Visibility, null); Spacer(Modifier.padding(4.dp)); Text(stringResource(R.string.detail_show_slot))
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            if (d.level.atLeast(Level.SWITCH) && features.identify) {
-                                OutlinedButton(onClick = vm::identify, enabled = !busy, modifier = Modifier.weight(1f)) {
-                                    Icon(Icons.Default.FlashOn, null); Spacer(Modifier.padding(4.dp)); Text(stringResource(R.string.detail_identify))
-                                }
-                            }
-                            if (current != null && d.level == Level.EDIT) {
-                                OutlinedButton(onClick = { onEditSlot(current.slot) }, enabled = current.editable, modifier = Modifier.weight(1f)) {
-                                    Icon(Icons.Default.Edit, null); Spacer(Modifier.padding(4.dp)); Text(stringResource(R.string.detail_edit))
-                                }
+                        if (d.level.atLeast(Level.SWITCH) && features.identify) {
+                            OutlinedButton(onClick = vm::identify, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
+                                Icon(Icons.Default.FlashOn, null); Spacer(Modifier.padding(4.dp)); Text(stringResource(R.string.detail_identify))
                             }
                         }
                         if (current != null && !current.editable) {
@@ -238,9 +247,9 @@ fun DisplayDetailScreen(
 }
 
 @Composable
-private fun SlotCard(conn: Connection, displayId: String, slot: Slot, active: Boolean, previewEtag: String?) {
+private fun SlotCard(conn: Connection, displayId: String, slot: Slot, active: Boolean, previewEtag: String?, onClick: (() -> Unit)?) {
     Card(
-        Modifier.fillMaxWidth().then(
+        Modifier.fillMaxWidth().then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier).then(
             if (active) Modifier.border(BorderStroke(3.dp, MaterialTheme.colorScheme.primary), RoundedCornerShape(12.dp)) else Modifier
         ),
     ) {

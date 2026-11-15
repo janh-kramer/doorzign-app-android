@@ -88,9 +88,8 @@
     <string name="action_more">More actions</string>
     <string name="detail_resend">Transfer again</string>
     <string name="detail_last_seen">last seen %1$s</string>
-    <string name="detail_show_slot">Show this view</string>
+    <string name="slot_show_n">Show view %1$d</string>
     <string name="detail_identify">Find display</string>
-    <string name="detail_edit">Edit</string>
     <string name="detail_not_editable">This view is configured in Zeitwart.</string>
     <string name="slot_n">View %1$d</string>
     <string name="slot_active">Active</string>

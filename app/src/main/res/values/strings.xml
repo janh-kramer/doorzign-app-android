@@ -107,9 +107,8 @@
     <string name="action_more">Weitere Aktionen</string>
     <string name="detail_resend">Erneut übertragen</string>
     <string name="detail_last_seen">zuletzt gesehen %1$s</string>
-    <string name="detail_show_slot">Diese Ansicht anzeigen</string>
+    <string name="slot_show_n">Ansicht %1$d anzeigen</string>
     <string name="detail_identify">Display finden</string>
-    <string name="detail_edit">Bearbeiten</string>
     <string name="detail_not_editable">Diese Ansicht wird in Zeitwart konfiguriert.</string>
     <string name="slot_n">Ansicht %1$d</string>
     <string name="slot_active">Aktiv</string>

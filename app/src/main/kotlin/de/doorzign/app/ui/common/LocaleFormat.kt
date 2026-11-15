@@ -18,6 +18,8 @@ object LocaleFormat {
     private val locale: Locale get() = Locale.getDefault()
 
     /** ISO-Wochentag (1 = Montag) → „Mo“ / „Mon“. */
+    fun weekdayFull(isoDay: Int): String = DayOfWeek.of(isoDay).getDisplayName(TextStyle.FULL_STANDALONE, locale)
+
     fun weekdayShort(isoDay: Int): String =
         DayOfWeek.of(isoDay).getDisplayName(TextStyle.SHORT_STANDALONE, locale).trimEnd('.')
 

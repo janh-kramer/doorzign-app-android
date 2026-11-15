@@ -1,10 +1,25 @@
 package de.doorzign.app.ui.schedules
 
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -211,7 +226,6 @@ private fun weekdaysLabel(days: List<Int>): String {
     return days.sorted().joinToString(", ") { if (it in WEEKDAYS) LocaleFormat.weekdayShort(it) else "?" }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ScheduleDialog(e: ScheduleEdit, busy: Boolean, vm: SchedulesViewModel) {
     val d = e.draft
@@ -227,12 +241,7 @@ private fun ScheduleDialog(e: ScheduleEdit, busy: Boolean, vm: SchedulesViewMode
                     (1..3).forEach { n -> FilterChip(d.slot == n, { vm.change { it.copy(slot = n) } }, { Text(stringResource(R.string.slot_n, n)) }) }
                 }
                 Text(stringResource(R.string.schedule_weekdays), style = MaterialTheme.typography.labelLarge)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    WEEKDAYS.forEach { n ->
-                        FilterChip(n in d.weekdays, { vm.change { it.copy(weekdays = if (n in it.weekdays) it.weekdays - n else it.weekdays + n) } },
-                            { Text(LocaleFormat.weekdayShort(n)) })
-                    }
-                }
+                WeekdayPicker(d.weekdays) { n -> vm.change { it.copy(weekdays = if (n in it.weekdays) it.weekdays - n else it.weekdays + n) } }
                 e.errors["weekdays"]?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Field(stringResource(R.string.schedule_start), d.start, e.errors["start"], Modifier.weight(1f), KeyboardType.Number) { v -> vm.change { it.copy(start = v) } }
@@ -262,3 +271,46 @@ private fun ScheduleDialog(e: ScheduleEdit, busy: Boolean, vm: SchedulesViewMode
 private fun Field(label: String, value: String, error: String?, modifier: Modifier, type: KeyboardType, onChange: (String) -> Unit) =
     OutlinedTextField(value, onChange, modifier, label = { Text(label) }, singleLine = true, isError = error != null,
         supportingText = error?.let { { Text(it) } }, keyboardOptions = KeyboardOptions(keyboardType = type))
+
+/**
+ * Sieben gleich breite Kapseln in einer Zeile, ohne Umbruch. Passt das längste Kürzel bei großer Schrift nicht in
+ * eine Kapsel, wird die Schrift für alle gleich verkleinert. TalkBack liest den vollen Wochentagsnamen.
+ */
+@Composable
+private fun WeekdayPicker(selected: Set<Int>, onToggle: (Int) -> Unit) {
+    val gap = 4.dp
+    val pad = 4.dp
+    val labels = WEEKDAYS.associateWith { LocaleFormat.weekdayShort(it) }
+    val base = MaterialTheme.typography.labelLarge
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val cellPx = with(density) { ((maxWidth - gap * 6) / 7 - pad * 2).toPx() }
+        val widest = labels.values.maxOf { measurer.measure(it, base, maxLines = 1, softWrap = false).size.width }
+        val style = if (widest > cellPx && cellPx > 0) base.copy(fontSize = base.fontSize * (cellPx / widest)) else base
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(gap)) {
+            WEEKDAYS.forEach { n ->
+                val on = n in selected
+                val full = LocaleFormat.weekdayFull(n)
+                Surface(
+                    shape = CircleShape,
+                    color = if (on) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface,
+                    contentColor = if (on) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                    border = if (on) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                    modifier = Modifier.weight(1f).heightIn(min = 40.dp)
+                        .toggleable(on, role = Role.Checkbox, onValueChange = { onToggle(n) })
+                        .clearAndSetSemantics {
+                            contentDescription = full
+                            role = Role.Checkbox
+                            toggleableState = ToggleableState(on)
+                            onClick { onToggle(n); true }
+                        },
+                ) {
+                    Box(Modifier.padding(horizontal = pad, vertical = 8.dp), contentAlignment = Alignment.Center) {
+                        Text(labels.getValue(n), style = style, maxLines = 1, softWrap = false, overflow = TextOverflow.Clip)
+                    }
+                }
+            }
+        }
+    }
+}
