@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Texte laut docs/ui-spec.md (Deutsch). Englisch folgt in values-en. -->
+<resources>
+    <string name="app_name">DoorZign</string>
+
+    <!-- Allgemein -->
+    <string name="action_back">Zurück</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_connect">Verbinden</string>
+    <string name="action_continue">Fortfahren</string>
+    <string name="action_retry">Erneut versuchen</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_delete">Löschen</string>
+    <string name="status_online">Online</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_unknown">Unbekannt</string>
+    <string name="system_edge">DoorZign Edge</string>
+    <string name="system_cloud">Zeitwart Cloud</string>
+    <string name="compat_update">Bitte App aktualisieren – dieses System benötigt eine neuere Version.</string>
+    <string name="compat_incompatible">System nicht kompatibel.</string>
+
+    <!-- Onboarding -->
+    <string name="welcome_title">Willkommen bei DoorZign</string>
+    <string name="welcome_choose">Mit welchem System möchten Sie sich verbinden?</string>
+    <string name="welcome_edge_title">DoorZign Edge</string>
+    <string name="welcome_edge_text">Lokale Installation über WLAN oder VPN</string>
+    <string name="welcome_cloud_title">Zeitwart Cloud</string>
+    <string name="welcome_cloud_text">Verbindung über das Internet</string>
+    <string name="welcome_mock_title">Mock-Server (Entwicklung)</string>
+    <string name="welcome_mock_text">Prism auf dem Entwicklungsrechner</string>
+    <string name="edge_scan_title">QR-Code scannen</string>
+    <string name="edge_scan_text">In der Edge-Weboberfläche unter „Mobile App verbinden“</string>
+    <string name="edge_scan_hint">Richten Sie die Kamera auf den QR-Code unter „Mobile App verbinden“.</string>
+    <string name="edge_search_title">Im Netzwerk suchen</string>
+    <string name="edge_search_text">Gateways im selben Netzwerk finden</string>
+    <string name="edge_search_running">Suche nach DoorZign-Gateways …</string>
+    <string name="edge_address_title">Adresse eingeben</string>
+    <string name="edge_address_text">IP-Adresse oder Hostname des Gateways</string>
+    <string name="edge_address_label">Adresse</string>
+    <string name="edge_address_help">z. B. 192.168.1.20 oder gateway.local (Port 8443)</string>
+    <string name="cloud_instance_label">Instanz</string>
+    <string name="cloud_instance_help">z. B. „firma“ für firma.zeitwart.de oder vollständige Adresse</string>
+    <string name="cloud_scan">QR-Code aus dem Zeitwart-Profil scannen</string>
+    <string name="qr_camera_needed">Zum Scannen des QR-Codes wird die Kamera benötigt.</string>
+    <string name="qr_allow_camera">Kamera erlauben</string>
+    <string name="tofu_title">Zertifikat bestätigen</string>
+    <string name="tofu_text">„%1$s“ meldet sich mit diesem Fingerprint:</string>
+    <string name="tofu_compare">Vergleichen Sie ihn in der Edge-Weboberfläche unter „Mobile App verbinden“. Nur bei Übereinstimmung vertrauen.</string>
+    <string name="tofu_trust">Vertrauen</string>
+
+    <!-- Anmeldung -->
+    <string name="login_subtitle">Bitte melden Sie sich an.</string>
+    <string name="login_username">Benutzername oder E-Mail</string>
+    <string name="login_password">Passwort</string>
+    <string name="login_device_name">Gerätename</string>
+    <string name="login_device_help">Erscheint unter „Verbundene Geräte“</string>
+    <string name="login_submit">Anmelden</string>
+    <string name="login_with">Anmelden mit %1$s</string>
+    <string name="login_local_account">Mit lokalem Konto anmelden</string>
+    <string name="login_no_methods">Für dieses System ist keine Anmeldung per App eingerichtet.</string>
+
+    <!-- Navigation -->
+    <string name="nav_displays">Displays</string>
+    <string name="nav_jobs">Übertragungen</string>
+    <string name="nav_settings">Einstellungen</string>
+
+    <!-- Displayliste -->
+    <string name="displays_search">Suchen</string>
+    <string name="displays_empty">Keine Displays gefunden.</string>
+    <string name="displays_transferring">Wird übertragen …</string>
+    <string name="filter_all">Alle</string>
+    <string name="filter_offline">Offline</string>
+    <string name="filter_battery">Akku schwach</string>
+    <string name="filter_error">Fehler</string>
+    <string name="filter_transfer">Übertragung offen</string>
+    <string name="slot_no_preview">Keine Vorschau</string>
+    <string name="slot_preview_cd">Vorschau Ansicht %1$d</string>
+    <string name="battery_cd">Akku</string>
+    <string name="battery_critical">%1$d %% kritisch</string>
+    <string name="signal_cd">Signal</string>
+    <string name="signal_good">Gut</string>
+    <string name="signal_medium">Mittel</string>
+    <string name="signal_weak">Schwach</string>
+    <string name="time_just_now">gerade eben</string>
+    <string name="time_minutes_ago">vor %1$d Min.</string>
+    <string name="time_hours_ago">vor %1$d Std.</string>
+    <string name="time_days_ago">vor %1$d Tagen</string>
+
+    <!-- Einstellungen -->
+    <string name="settings_connected">Verbunden mit</string>
+    <string name="settings_address">Adresse</string>
+    <string name="settings_api_version">API-Version</string>
+    <string name="settings_user">Benutzer</string>
+    <string name="role_admin">Administrator</string>
+    <string name="role_user">Benutzer</string>
+    <string name="settings_logout">Abmelden</string>
+    <string name="settings_switch">Mit anderem System verbinden</string>
+    <string name="settings_switch_confirm">Zugangsdaten und zwischengespeicherte Daten werden gelöscht.</string>
+    <string name="settings_app_version">App-Version</string>
+    <string name="settings_imprint">Impressum</string>
+    <string name="settings_privacy">Datenschutz</string>
+    <!-- Displaydetail -->
+    <string name="action_more">Weitere Aktionen</string>
+    <string name="detail_resend">Erneut übertragen</string>
+    <string name="detail_last_seen">zuletzt gesehen %1$s</string>
+    <string name="detail_show_slot">Diese Ansicht anzeigen</string>
+    <string name="detail_identify">Display finden</string>
+    <string name="detail_edit">Bearbeiten</string>
+    <string name="detail_not_editable">Diese Ansicht wird in Zeitwart konfiguriert.</string>
+    <string name="slot_n">Ansicht %1$d</string>
+    <string name="slot_active">Aktiv</string>
+    <string name="slot_transferred">Übertragen</string>
+    <string name="slot_not_transferred">Noch nicht übertragen</string>
+    <string name="type_text">Text</string>
+    <string name="type_image">Bild</string>
+    <string name="type_calendar">Kalender</string>
+    <string name="type_deactivated">Deaktiviert</string>
+    <string name="license_doorzign">Lizenz DoorZign</string>
+    <string name="license_ical">Lizenz iCal Connect</string>
+    <string name="license_none">Keine Lizenz</string>
+    <string name="license_until">%1$s bis %2$s</string>
+    <string name="adhoc_title">Ad-hoc-Nachricht</string>
+    <string name="adhoc_none">Keine Nachricht aktiv</string>
+    <string name="adhoc_running">Noch %1$s: %2$s</string>
+    <string name="adhoc_end">Beenden</string>
+    <string name="schedules_title">Zeitpläne</string>
+    <string name="calendar_title">Kalender</string>
+    <string name="calendar_occupied">Jetzt belegt</string>
+    <string name="calendar_free">Jetzt frei</string>
+    <string name="calendar_no_events">Heute keine Termine</string>
+    <string name="jobs_open_count">%1$d offen</string>
+    <string name="duration_hm">%1$d Std. %2$d Min.</string>
+    <string name="duration_m">%1$d Min.</string>
+
+    <!-- Aufträge (ui-spec §7) -->
+    <string name="job_pending">Wartet</string>
+    <string name="job_progress">Wird übertragen</string>
+    <string name="job_retry">Neuer Versuch geplant</string>
+    <string name="job_done">Übertragen</string>
+    <string name="job_failed">Fehlgeschlagen</string>
+    <string name="job_skipped">Übersprungen</string>
+    <string name="job_abandoned">Abgebrochen</string>
+    <!-- Ansicht bearbeiten (ui-spec §4) -->
+    <string name="editor_title">Ansicht %1$d bearbeiten</string>
+    <string name="editor_preview">Vorschau</string>
+    <string name="editor_no_preview">Keine Vorschau</string>
+    <string name="editor_active_hint">Die aktive Ansicht kann nicht deaktiviert werden.</string>
+    <string name="editor_deactivated_hint">Diese Ansicht wird am Display nicht angeboten.</string>
+    <string name="editor_discard_title">Änderungen verwerfen?</string>
+    <string name="editor_discard_text">Ihre Änderungen wurden noch nicht gespeichert.</string>
+    <string name="editor_discard">Verwerfen</string>
+    <string name="editor_conflict_title">Inzwischen geändert</string>
+    <string name="editor_conflict_text">Inzwischen von jemand anderem geändert. Neu laden oder Ihre Version speichern?</string>
+    <string name="editor_reload">Neu laden</string>
+    <string name="editor_overwrite">Überschreiben</string>
+    <string name="text_title">Titel</string>
+    <string name="text_headline">Überschrift</string>
+    <string name="text_subheadline">Unterüberschrift</string>
+    <string name="text_message">Nachricht</string>
+    <string name="color_text">Text</string>
+    <string name="color_bg">Hintergrund</string>
+    <string name="color_message">Nachrichtentext</string>
+    <string name="color_message_bg">Nachrichtenhintergrund</string>
+    <string name="color_black">Schwarz</string>
+    <string name="color_white">Weiß</string>
+    <string name="color_red">Rot</string>
+    <string name="image_none">Noch kein Bild ausgewählt</string>
+    <string name="image_selected">Bild ausgewählt</string>
+    <string name="image_camera">Kamera</string>
+    <string name="image_gallery">Fotomediathek</string>
+    <string name="image_fit">Einpassen</string>
+    <string name="image_fit_fill">Füllen</string>
+    <string name="image_fit_crop">Zuschneiden</string>
+    <string name="image_dither">Dithering</string>
+    <string name="calendar_name">Name</string>
+    <string name="calendar_url">iCal-URL</string>
+    <string name="calendar_url_help">webcal://-Adressen werden automatisch umgewandelt</string>
+    <string name="calendar_timezone">Zeitzone</string>
+    <string name="calendar_check">Prüfen</string>
+    <string name="calendar_check_ok">OK – %1$d Termine</string>
+    <!-- Ad-hoc (ui-spec §5) -->
+    <string name="adhoc_current_until">Läuft bis %1$s</string>
+    <string name="adhoc_replace_hint">Eine neue Nachricht ersetzt die laufende.</string>
+    <string name="adhoc_duration">Dauer</string>
+    <string name="adhoc_show_now">Jetzt anzeigen</string>
+    <string name="duration_hours">%1$.1f Std.</string>
+
+    <!-- Zeitpläne (ui-spec §6) -->
+    <string name="schedule_new">Neuer Zeitplan</string>
+    <string name="schedule_edit">Zeitplan bearbeiten</string>
+    <string name="schedule_empty">Keine Zeitpläne.</string>
+    <string name="schedule_tz_hint">Zeiten gelten in der Zeitzone %1$s.</string>
+    <string name="schedule_valid">Gültig %1$s bis %2$s</string>
+    <string name="schedule_name">Name</string>
+    <string name="schedule_slot">Ansicht</string>
+    <string name="schedule_weekdays">Wochentage</string>
+    <string name="schedule_start">Start (HH:MM)</string>
+    <string name="schedule_end">Ende (HH:MM)</string>
+    <string name="schedule_overnight">Ende vor Start: Der Zeitplan läuft über Mitternacht.</string>
+    <string name="schedule_from">Gültig ab</string>
+    <string name="schedule_until">Gültig bis</string>
+    <string name="schedule_priority">Priorität (0–100)</string>
+    <string name="schedule_enabled">Aktiv</string>
+    <string name="schedule_delete_title">Zeitplan löschen?</string>
+    <string name="wd_mo">Mo</string>
+    <string name="wd_tu">Di</string>
+    <string name="wd_we">Mi</string>
+    <string name="wd_th">Do</string>
+    <string name="wd_fr">Fr</string>
+    <string name="wd_sa">Sa</string>
+    <string name="wd_su">So</string>
+
+    <!-- Übertragungen (ui-spec §7) -->
+    <string name="jobs_empty">Keine Aufträge.</string>
+    <string name="jobs_incomplete">Es werden nur die neuesten Aufträge angezeigt.</string>
+    <string name="jobs_next_try">Nächster Versuch um %1$s</string>
+    <string name="jobtype_upload">Inhalt übertragen</string>
+    <string name="jobtype_press">Ansicht wechseln</string>
+    <string name="jobtype_unbind">Ansicht entfernen</string>
+    <string name="jobtype_identify">Display finden</string>
+    <string name="jobtype_other">Sonstiger Auftrag</string>
+    <!-- Fehler (lokal; Servertexte kommen aus error.message) -->
+    <string name="err_network">Keine Verbindung zum Server</string>
+    <string name="err_timeout">Zeitüberschreitung – der Server antwortet nicht</string>
+    <string name="err_tls">Sichere Verbindung fehlgeschlagen</string>
+    <string name="err_certificate_changed">Zertifikat hat sich geändert. Bitte die App neu mit dem System verbinden.</string>
+    <string name="err_instance_mismatch">Unter dieser Adresse antwortet ein anderes System. Bitte QR-Code erneut scannen.</string>
+    <string name="err_protocol">Unerwartete Antwort vom Server</string>
+    <string name="err_unknown">Unbekannter Fehler</string>
+    <string name="err_401">Bitte erneut anmelden</string>
+    <string name="err_403">Keine Berechtigung</string>
+    <string name="err_404">Nicht gefunden</string>
+    <string name="err_413">Datei ist zu groß</string>
+    <string name="err_429">Zu viele Versuche – bitte später erneut versuchen</string>
+    <string name="err_503">System vorübergehend nicht erreichbar</string>
+    <string name="err_server">Serverfehler (%1$d)</string>
+    <string name="err_mdns">Suche im Netzwerk fehlgeschlagen (%1$d)</string>
+    <string name="err_image_too_large">Das Bild ist auch verkleinert zu groß für dieses System.</string>
+    <string name="err_image_unreadable">Bild konnte nicht gelesen werden.</string>
+    <string name="pair_not_doorzign">Kein DoorZign-QR-Code</string>
+    <string name="pair_no_address">QR-Code enthält keine Adresse</string>
+    <string name="pair_bad_fingerprint">Ungültiger Fingerprint im QR-Code</string>
+    <string name="pair_no_fingerprint">QR-Code enthält keinen Fingerprint</string>
+    <string name="pair_fingerprint_count">Anzahl der Fingerprints passt nicht zu den Adressen</string>
+    <string name="pair_no_instance">QR-Code enthält keine Installations-ID</string>
+    <string name="pair_not_pairing">Das ist kein Verbindungscode</string>
+    <string name="pair_unknown">Unbekannter DoorZign-Code</string>
+    <string name="pair_invalid_address">Ungültige Adresse</string>
+    <string name="pair_https_only">Nur HTTPS-Adressen sind erlaubt</string>
+    <string name="pair_empty_instance">Bitte Instanz eingeben</string>
+    <string name="pair_invalid_instance">Ungültiger Instanzname</string>
+    <string name="tofu_warn_fingerprint">Der Fingerprint weicht von der Ankündigung im Netzwerk ab. Nur fortfahren, wenn er in der Edge-Weboberfläche übereinstimmt.</string>
+    <string name="tofu_warn_instance">Die Installations-ID weicht von der Ankündigung im Netzwerk ab.</string>
+    <string name="session_expired">Die Sitzung ist abgelaufen. Bitte erneut anmelden.</string>
+    <string name="sso_unmatched">Anmeldung konnte nicht zugeordnet werden. Bitte erneut versuchen.</string>
+    <string name="sso_expired">Anmeldung abgelaufen. Bitte erneut versuchen.</string>
+    <string name="sso_failed">Anmeldung fehlgeschlagen.</string>
+    <string name="sso_failed_code">Anmeldung fehlgeschlagen (%1$s).</string>
+    <string name="sso_denied">Anmeldung abgebrochen oder verweigert.</string>
+    <string name="sso_provider_error">Anmeldung beim Anbieter fehlgeschlagen.</string>
+    <string name="msg_slot_shown">Ansicht %1$d wird angezeigt</string>
+    <string name="msg_identify">Das Display blinkt in Kürze</string>
+    <string name="msg_resend">Alle Ansichten werden erneut übertragen</string>
+    <string name="msg_adhoc_ended">Ad-hoc-Nachricht beendet</string>
+    <string name="calendar_invalid_url">Bitte eine gültige URL eingeben.</string>
+    <string name="calendar_check_failed">Kalender konnte nicht geladen werden.</string>
+    <string name="schedule_conflict">Inzwischen von jemand anderem geändert – Liste wurde neu geladen.</string>
+    <string name="sched_err_weekday">Mindestens einen Wochentag wählen</string>
+    <string name="sched_err_time">Uhrzeit im Format HH:MM</string>
+    <string name="sched_err_equal">Start und Ende dürfen nicht gleich sein</string>
+    <string name="sched_err_priority">Priorität 0–100</string>
+    <string name="sched_err_date">Datum im Format JJJJ-MM-TT</string>
+    <string name="sched_err_until">Ende liegt vor dem Beginn</string>
+    <string name="settings_backend">Backend %1$s</string>
+
+    <!-- Medienbibliothek (ui-spec §4, Feature media.library) -->
+    <string name="image_library">Aus Bibliothek</string>
+    <string name="library_title">Bild auswählen</string>
+    <string name="library_empty">Noch keine Bilder vorhanden.</string>
+</resources>

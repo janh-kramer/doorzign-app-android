@@ -1,0 +1,37 @@
+package de.doorzign.app
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import de.doorzign.app.core.PairingUri
+import de.doorzign.app.ui.AppRoot
+import de.doorzign.app.ui.theme.DoorZignTheme
+
+class MainActivity : ComponentActivity() {
+    private val container get() = (application as DoorZignApp).container
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        if (savedInstanceState == null) handleIntent(intent)
+        setContent { DoorZignTheme { AppRoot() } }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    /** `doorzign://auth/callback` (SSO) sowie `doorzign://edge|cloud` (Verbindungscode als Link). */
+    private fun handleIntent(intent: Intent?) {
+        val uri = intent?.data ?: return
+        if (uri.scheme != "doorzign") return
+        when (uri.host) {
+            "auth" -> if (uri.path == "/callback") container.sessions.handleSsoCallback(uri)
+            "edge", "cloud" -> runCatching { PairingUri.parse(uri.toString()) }
+                .onSuccess { container.sessions.pendingPairing.value = it }
+        }
+    }
+}
