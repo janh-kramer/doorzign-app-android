@@ -75,6 +75,7 @@ tasks.test {
     environment("PRISM_URL", System.getenv("PRISM_URL") ?: "")
     environment("E2E_EDGE_URL", System.getenv("E2E_EDGE_URL") ?: "")
     environment("E2E_EDGE_FP", System.getenv("E2E_EDGE_FP") ?: "")
+    environment("E2E_CLOUD_URL", System.getenv("E2E_CLOUD_URL") ?: "")
     testLogging { events("passed", "skipped", "failed"); showStandardStreams = true }
     outputs.upToDateWhen { false }
 }

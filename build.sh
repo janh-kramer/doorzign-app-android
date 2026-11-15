@@ -17,6 +17,6 @@ docker image inspect doorzign-build:1 >/dev/null 2>&1 || docker build --platform
 exec docker run --rm --platform linux/amd64 \
   -v "$PWD":/workspace -v doorzign-app-android-gradle:/gradle-cache \
   -v "$(cd .. && pwd)/doorzign-app-coordination/contract":/contract:ro \
-  -e DOORZIGN_CONTRACT=/contract/dist/mobile-v1.yaml -e PRISM_URL="${PRISM_URL:-}" -e E2E_EDGE_URL="${E2E_EDGE_URL:-}" -e E2E_EDGE_FP="${E2E_EDGE_FP:-}" \
+  -e DOORZIGN_CONTRACT=/contract/dist/mobile-v1.yaml -e PRISM_URL="${PRISM_URL:-}" -e E2E_EDGE_URL="${E2E_EDGE_URL:-}" -e E2E_EDGE_FP="${E2E_EDGE_FP:-}" -e E2E_CLOUD_URL="${E2E_CLOUD_URL:-}" \
   -e GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.vfs.watch=false" \
   doorzign-build:1 ./gradlew "$@"
