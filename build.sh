@@ -3,7 +3,7 @@
 # Beispiel: ./build.sh :api:test   |   ./build.sh :app:assembleDebug
 set -euo pipefail
 cd "$(dirname "$0")"
-EDGE_DOCKER="$(cd .. && pwd)/doorzign-android/docker"
+EDGE_DOCKER="$(cd .. && pwd)/doorzign-edge/docker"
 # Docker-Speicher (8 GB) teilen sich alle Sessions: nicht parallel zu einem anderen Gradle-Build bauen.
 # Dauerläufer auf demselben Image (z. B. dz-dev mit devhost/Simulator) zählen nicht.
 other_builds() {

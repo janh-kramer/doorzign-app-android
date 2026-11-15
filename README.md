@@ -18,7 +18,7 @@ Von Hand statt generiert: `SlotContent` (sealed class), `TextContent` (immer mit
 ./build.sh :api:test               # Kern-Tests (JVM)
 ./build.sh :app:assembleDebug      # APK: app/build/outputs/apk/debug/
 ```
-Der Build läuft im Docker-Image `doorzign-build:1` (aus `../doorzign-android/docker`) mit eigenem Gradle-Volume.
+Der Build läuft im Docker-Image `doorzign-build:1` (aus `../doorzign-edge/docker`) mit eigenem Gradle-Volume.
 
 ## Gegen den Mock entwickeln
 ```bash
