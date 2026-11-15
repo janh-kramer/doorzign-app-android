@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import de.doorzign.app.AppContainer
 import de.doorzign.app.R
+import de.doorzign.app.core.SystemType
 import de.doorzign.app.api.model.GetAuthProviders200Response
 import de.doorzign.app.api.model.SsoProvider
 import de.doorzign.app.core.ApiException
@@ -83,7 +84,8 @@ class LoginViewModel(private val c: AppContainer) : ViewModel() {
             try {
                 c.sessions.login(username.trim(), password, deviceName.trim().take(100), provider)
             } catch (e: ApiException) {
-                error.value = Texts.error(e)
+                // 401 beim Passwort-Login heißt: Zugangsdaten falsch (glossary.md), nicht „erneut anmelden“
+                error.value = if (e.code == "unauthorized") Texts.get(R.string.login_wrong_credentials) else Texts.error(e)
                 fieldErrors.value = e.fields
             } finally {
                 busy.value = false
@@ -150,7 +152,9 @@ fun LoginScreen(notice: String?) {
                             keyboardActions = KeyboardActions(onDone = { submit() }))
                         OutlinedTextField(deviceName, { deviceName = it.take(100) }, Modifier.fillMaxWidth(),
                             label = { Text(stringResource(R.string.login_device_name)) }, singleLine = true,
-                            supportingText = { Text(stringResource(R.string.login_device_help)) })
+                            supportingText = { Text(stringResource(
+                                if (c.sessions.connection?.profile?.systemType == SystemType.CLOUD) R.string.login_device_help_cloud
+                                else R.string.login_device_help_edge)) })
                         BusyButton(stringResource(R.string.login_submit), busy, submit, Modifier.fillMaxWidth(),
                             enabled = username.isNotBlank() && password.isNotEmpty() && deviceName.isNotBlank())
                         if (pwProvider != null && p.value.password) {

@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.doorzign.app.R
+import de.doorzign.app.ui.common.LocaleFormat
 import de.doorzign.app.core.TextLimits
 import de.doorzign.app.api.infrastructure.Success
 import de.doorzign.app.api.model.Adhoc
@@ -142,7 +143,7 @@ fun AdhocScreen(conn: Connection, displayId: String, onDone: () -> Unit) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     AdhocViewModel.DURATIONS.forEach { m ->
                         FilterChip(selected = m == duration, onClick = { vm.duration.value = m },
-                            label = { Text(if (m < 60) stringResource(R.string.duration_m, m) else stringResource(R.string.duration_hours, m / 60.0)) })
+                            label = { Text(LocaleFormat.duration(m.toLong())) })
                     }
                 }
                 fields["durationMinutes"]?.let { Text(it.joinToString(), color = MaterialTheme.colorScheme.error) }

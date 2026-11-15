@@ -4,7 +4,13 @@ import okhttp3.Interceptor
 import okhttp3.Response
 
 /** Daten der App für Header und Anmeldung. */
-data class AppInfo(val version: String, val platform: String = "android", val language: String = "de") {
+data class AppInfo(
+    val version: String,
+    val platform: String = "android",
+    /** Gerätesprache für `Accept-Language` (`de` oder `en`); wird je Request gelesen, damit ein Sprachwechsel sofort wirkt. */
+    private val languageOf: () -> String = { "de" },
+) {
+    val language: String get() = languageOf()
     val userAgent: String get() = "DoorZign-App/$version ($platform)"
 }
 

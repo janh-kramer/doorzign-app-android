@@ -298,10 +298,10 @@ fun jobStatusLabel(status: String): String = when (status) {
 private fun remaining(endsAt: String): String {
     val end = runCatching { Instant.parse(endsAt) }.getOrNull() ?: return "–"
     val m = Duration.between(Instant.now(), end).toMinutes().coerceAtLeast(0)
-    return if (m >= 60) stringResource(R.string.duration_hm, m / 60, m % 60) else stringResource(R.string.duration_m, m)
+    return de.doorzign.app.ui.common.LocaleFormat.duration(m)
 }
 
-/** ISO-Zeitpunkt → Uhrzeit in Gerätezeitzone. */
+/** ISO-Zeitpunkt → Uhrzeit in Gerätezeitzone und Geräteformat (24 h bzw. 12 h). */
 fun localTime(iso: String): String = runCatching {
-    java.time.format.DateTimeFormatter.ofPattern("HH:mm").withZone(java.time.ZoneId.systemDefault()).format(Instant.parse(iso))
+    java.time.format.DateTimeFormatter.ofLocalizedTime(java.time.format.FormatStyle.SHORT).withZone(java.time.ZoneId.systemDefault()).format(Instant.parse(iso))
 }.getOrDefault(iso)

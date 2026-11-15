@@ -82,7 +82,7 @@ class DisplayListViewModel(private val conn: Connection) : ViewModel() {
     val query = MutableStateFlow("")
     val filter = MutableStateFlow(DisplayFilter.ALL)
     val transientError = MutableStateFlow<String?>(null)
-    private val collator = Collator.getInstance(Locale.GERMAN)
+    private val collator = Collator.getInstance(Locale.getDefault())
 
     val visible: StateFlow<Loadable<List<Display>>> = combine(all, query, filter) { l, q, f ->
         when (l) {

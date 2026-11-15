@@ -125,17 +125,11 @@ fun SignalLabel(rssi: Int?) {
     }
 }
 
-/** „vor 5 Min.“ usw. für `lastSeen`. */
+/** Relative Zeit („vor 5 Minuten“) für `lastSeen` usw., aus der Gerätesprache. */
 @Composable
 fun relativeTime(iso: String?): String {
     val t = iso?.let { runCatching { Instant.parse(it) }.getOrNull() } ?: return stringResource(R.string.status_unknown)
-    val d = Duration.between(t, Instant.now())
-    return when {
-        d.toMinutes() < 1 -> stringResource(R.string.time_just_now)
-        d.toMinutes() < 60 -> stringResource(R.string.time_minutes_ago, d.toMinutes())
-        d.toHours() < 48 -> stringResource(R.string.time_hours_ago, d.toHours())
-        else -> stringResource(R.string.time_days_ago, d.toDays())
-    }
+    return de.doorzign.app.ui.common.LocaleFormat.relative(t)
 }
 
 /** `W/"abc"` und `"abc"` → `abc` (Vertrag 1.2.2: previewEtag = ETag-Header inkl. Anführungszeichen). */

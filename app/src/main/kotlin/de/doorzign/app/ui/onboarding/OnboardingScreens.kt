@@ -63,6 +63,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import de.doorzign.app.R
 import de.doorzign.app.core.Fingerprints
+import de.doorzign.app.core.PairingUri
 import de.doorzign.app.net.FoundGateway
 import de.doorzign.app.ui.common.BusyButton
 import de.doorzign.app.ui.common.ErrorCard
@@ -277,8 +278,10 @@ private fun CloudScreen(nav: NavController, vm: OnboardingViewModel) {
             )
             BusyButton(stringResource(R.string.action_connect), state.busy, { vm.connectCloud(instance) },
                 Modifier.fillMaxWidth(), enabled = instance.isNotBlank())
-            TextButton(onClick = { scanning = true }, Modifier.fillMaxWidth()) {
-                Icon(Icons.Default.QrCodeScanner, null); Spacer(Modifier.size(8.dp)); Text(stringResource(R.string.cloud_scan))
+            if (PairingUri.CLOUD_QR) { // erst sichtbar, wenn Zeitwart einen Verbindungs-QR anbietet (ui-spec)
+                TextButton(onClick = { scanning = true }, Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.QrCodeScanner, null); Spacer(Modifier.size(8.dp)); Text(stringResource(R.string.cloud_scan))
+                }
             }
         }
     }

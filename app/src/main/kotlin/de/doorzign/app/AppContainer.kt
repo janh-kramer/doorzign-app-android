@@ -16,7 +16,7 @@ import kotlinx.coroutines.SupervisorJob
 /** Einfache manuelle Abhängigkeiten – genau eine Instanz pro Prozess. */
 class AppContainer(context: Context) {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    val appInfo = AppInfo(version = BuildConfig.VERSION_NAME)
+    val appInfo = AppInfo(version = BuildConfig.VERSION_NAME, languageOf = { if (java.util.Locale.getDefault().language == "de") "de" else "en" })
     val sessions = SessionManager(
         context = context,
         tokens = KeystoreTokenStore(context),

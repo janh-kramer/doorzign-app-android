@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.doorzign.app.R
+import de.doorzign.app.ui.common.LocaleFormat
 import de.doorzign.app.api.model.Display
 import de.doorzign.app.api.model.Schedule
 import de.doorzign.app.api.model.ScheduleInput
@@ -142,8 +143,8 @@ class SchedulesViewModel(private val conn: Connection, private val displayId: St
     )
 }
 
-private val WEEKDAYS = listOf(1 to R.string.wd_mo, 2 to R.string.wd_tu, 3 to R.string.wd_we, 4 to R.string.wd_th,
-    5 to R.string.wd_fr, 6 to R.string.wd_sa, 7 to R.string.wd_su)
+/** ISO-Wochentage 1 = Montag … 7 = Sonntag; Namen aus der Locale. */
+private val WEEKDAYS = 1..7
 
 /** Zeitpläne (ui-spec §6). */
 @Composable
@@ -207,8 +208,7 @@ fun SchedulesScreen(conn: Connection, displayId: String, onBack: () -> Unit) {
 
 @Composable
 private fun weekdaysLabel(days: List<Int>): String {
-    val names = WEEKDAYS.associate { (n, r) -> n to stringResource(r) }
-    return days.sorted().joinToString(", ") { names[it] ?: "?" }
+    return days.sorted().joinToString(", ") { if (it in WEEKDAYS) LocaleFormat.weekdayShort(it) else "?" }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -228,9 +228,9 @@ private fun ScheduleDialog(e: ScheduleEdit, busy: Boolean, vm: SchedulesViewMode
                 }
                 Text(stringResource(R.string.schedule_weekdays), style = MaterialTheme.typography.labelLarge)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    WEEKDAYS.forEach { (n, r) ->
+                    WEEKDAYS.forEach { n ->
                         FilterChip(n in d.weekdays, { vm.change { it.copy(weekdays = if (n in it.weekdays) it.weekdays - n else it.weekdays + n) } },
-                            { Text(stringResource(r)) })
+                            { Text(LocaleFormat.weekdayShort(n)) })
                     }
                 }
                 e.errors["weekdays"]?.let { Text(it, color = MaterialTheme.colorScheme.error) }

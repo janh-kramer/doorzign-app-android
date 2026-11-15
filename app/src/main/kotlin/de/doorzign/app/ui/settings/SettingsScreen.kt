@@ -23,7 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -52,7 +52,8 @@ fun SettingsScreen(conn: Connection) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var confirm by rememberSaveable { mutableStateOf<String?>(null) }
-    val me by produceState<Me?>(null, conn) { value = runCatching { apiCall { conn.api.me.getMe() } }.getOrNull() }
+    var me by remember(conn) { mutableStateOf<Me?>(null) }
+    LaunchedEffect(conn) { me = runCatching { apiCall { conn.api.me.getMe() } }.getOrNull() }
     LaunchedEffect(Unit) { c.sessions.refreshSystem() }
 
     Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.nav_settings)) }) }) { pad ->

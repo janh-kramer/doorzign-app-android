@@ -21,12 +21,30 @@ object Texts {
     fun get(@StringRes id: Int, vararg args: Any): String = res.getString(id, *args)
 
     fun error(t: Throwable): String = when (t) {
-        // Bekannte Fachcodes vor der Servermeldung, damit die Meldung zur Situation passt (Vertrag 1.2.4)
-        is ApiException -> if (t.code == "unlicensed") get(R.string.err_unlicensed) else t.serverMessage ?: local(t)
+        is ApiException -> api(t)
         is PairingException -> pairing(t.reason)
         is ImagePrep.TooLarge -> get(R.string.err_image_too_large)
         is ImagePrep.Unreadable -> get(R.string.err_image_unreadable)
         else -> get(R.string.err_unknown)
+    }
+
+    /**
+     * Regel aus docs/glossary.md: Für bekannte `error.code`s eigene Texte (in Gerätesprache),
+     * `error.message` nur bei `validation` und unbekannten Codes.
+     */
+    private fun api(e: ApiException): String = when (e.code) {
+        "unauthorized" -> get(R.string.err_401)
+        "token_expired" -> get(R.string.session_expired)
+        "forbidden" -> get(R.string.err_403)
+        "not_found" -> get(R.string.err_404)
+        "unlicensed" -> get(R.string.err_unlicensed)
+        "precondition_failed" -> get(R.string.editor_conflict_title)
+        "too_large" -> get(R.string.err_413)
+        "rate_limited" -> get(R.string.err_429)
+        "unavailable" -> get(R.string.err_503)
+        "conflict" -> get(R.string.err_conflict)
+        "internal" -> get(R.string.err_internal)
+        else -> e.serverMessage ?: local(e)
     }
 
     private fun local(e: ApiException): String = when (e.code) {

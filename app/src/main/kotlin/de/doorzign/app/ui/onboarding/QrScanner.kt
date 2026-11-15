@@ -39,6 +39,7 @@ import de.doorzign.app.R
 import java.util.concurrent.Executors
 
 /** Kamera-Vorschau mit QR-Erkennung (CameraX + ML Kit). Meldet jeden neuen `doorzign://`-Inhalt einmal. */
+@androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
 @Composable
 fun QrScanner(onCode: (String) -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
