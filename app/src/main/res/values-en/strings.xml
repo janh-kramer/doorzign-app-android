@@ -28,7 +28,7 @@
     <string name="edge_address_title">Enter address</string>
     <string name="edge_address_text">IP address or hostname of the gateway</string>
     <string name="edge_address_label">Address</string>
-    <string name="edge_address_help">e.g. 192.168.1.20 or gateway.local (port 8443)</string>
+    <string name="edge_address_help">e.g. 192.168.1.20 or gateway.local (port 9443)</string>
     <string name="cloud_instance_label">Instance</string>
     <string name="cloud_instance_help">e.g. “company” for company.zeitwart.de, or the full address</string>
     <string name="cloud_scan">Scan QR code</string>

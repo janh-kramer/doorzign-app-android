@@ -37,7 +37,7 @@
     <string name="edge_address_title">Adresse eingeben</string>
     <string name="edge_address_text">IP-Adresse oder Hostname des Gateways</string>
     <string name="edge_address_label">Adresse</string>
-    <string name="edge_address_help">z. B. 192.168.1.20 oder gateway.local (Port 8443)</string>
+    <string name="edge_address_help">z. B. 192.168.1.20 oder gateway.local (Port 9443)</string>
     <string name="cloud_instance_label">Instanz</string>
     <string name="cloud_instance_help">z. B. „firma“ für firma.zeitwart.de oder vollständige Adresse</string>
     <string name="cloud_scan">QR-Code scannen</string>

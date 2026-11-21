@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
+import de.doorzign.app.core.AddressInput
 import de.doorzign.app.core.Fingerprints
 import java.net.Inet6Address
 import kotlin.coroutines.resume
@@ -86,7 +87,7 @@ class NsdDiscovery(private val context: Context) {
         return FoundGateway(
             serviceName = info.serviceName,
             host = host,
-            httpsPort = txt["https"]?.toIntOrNull() ?: 8443,
+            httpsPort = txt["https"]?.toIntOrNull() ?: AddressInput.EDGE_DEFAULT_PORT,
             instanceId = txt["id"],
             name = txt["name"],
             node = txt["node"],

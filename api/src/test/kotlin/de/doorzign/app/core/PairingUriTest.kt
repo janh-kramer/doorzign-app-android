@@ -49,8 +49,10 @@ class PairingUriTest {
     }
 
     @Test fun adresseingabe() {
-        assertEquals("https://192.168.1.20:8443", AddressInput.edgeOrigin("192.168.1.20"))
-        assertEquals("https://gw.local:9443", AddressInput.edgeOrigin("gw.local:9443"))
+        // ohne Port → Standard 9443 (Vertrag 1.4.1); ausdrücklicher Port, auch der alte 8443, bleibt erhalten
+        assertEquals("https://192.168.1.20:9443", AddressInput.edgeOrigin("192.168.1.20"))
+        assertEquals("https://gw.local:9443", AddressInput.edgeOrigin("gw.local"))
+        assertEquals("https://gw.local:8443", AddressInput.edgeOrigin("gw.local:8443"))
         assertEquals("https://firma.zeitwart.de", AddressInput.cloudOrigin("Firma"))
         assertEquals("https://zeit.example.org", AddressInput.cloudOrigin("zeit.example.org"))
         assertEquals("https://firma.zeitwart.de", AddressInput.cloudOrigin("https://firma.zeitwart.de/login"))

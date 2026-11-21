@@ -83,10 +83,11 @@ sealed interface PairingUri {
 
 /** Eingaben aus „Adresse eingeben“ / Instanzfeld in Origins übersetzen. */
 object AddressInput {
-    const val EDGE_DEFAULT_PORT = 8443
+    /** Edge-HTTPS für `/mobile/v1` (Vertrag 1.4.1, decisions 44; vorher 8443). */
+    const val EDGE_DEFAULT_PORT = 9443
     const val CLOUD_DOMAIN = "zeitwart.de"
 
-    /** `192.168.1.20` → `https://192.168.1.20:8443`; `host:9443` und volle URLs bleiben erhalten. */
+    /** `192.168.1.20` → `https://192.168.1.20:9443`; `host:8443` und volle URLs bleiben erhalten. */
     fun edgeOrigin(input: String): String {
         val t = input.trim()
         if (t.contains("://")) return PairingUri.normalizeOrigin(t)

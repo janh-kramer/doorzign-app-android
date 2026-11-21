@@ -9,7 +9,7 @@ enum class SystemType { EDGE, CLOUD }
 /**
  * Das eine aktive Verbindungsprofil.
  *
- * @param origins Basis-URLs ohne Pfad (z. B. `https://192.168.1.20:8443`); die zuletzt erfolgreiche steht vorn.
+ * @param origins Basis-URLs ohne Pfad (z. B. `https://192.168.1.20:9443`); die zuletzt erfolgreiche steht vorn.
  * @param fingerprints Leer = Systemvertrauen (Cloud). Sonst SHA-256-Fingerprints (64 Hex, klein), entweder einer
  *   für alle URLs oder positionsweise gleich viele wie [origins].
  */
