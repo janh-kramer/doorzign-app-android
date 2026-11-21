@@ -16,6 +16,7 @@ import de.doorzign.app.core.AppInfo
 import de.doorzign.app.core.Compatibility
 import de.doorzign.app.core.ConnectionProfile
 import de.doorzign.app.core.Fingerprints
+import de.doorzign.app.core.LinkRouting
 import de.doorzign.app.core.Pkce
 import de.doorzign.app.core.Session
 import de.doorzign.app.core.Sso
@@ -82,8 +83,17 @@ class SessionManager(
     val sso: StateFlow<SsoStatus> = _sso.asStateFlow()
 
     /** QR-/Deep-Link-Inhalt, der vom Onboarding übernommen werden soll. */
-    /** Roher Verbindungslink (`doorzign://edge|cloud…`) aus einem Intent; das Onboarding prüft und meldet Fehler. */
+    /**
+     * Roher Verbindungslink (`doorzign://edge|cloud…`) für das Onboarding, das ihn prüft und Fehler meldet. Wird nur im
+     * Zustand Onboarding gesetzt; verlässt die App das Onboarding mit gehaltenem Link, wird er sofort neu eingeordnet.
+     */
     val pendingPairing = MutableStateFlow<String?>(null)
+
+    /** Angemeldet + Link auf ein anderes System: wartet auf die Bestätigung „Mit anderem System verbinden“. */
+    val linkSwitch = MutableStateFlow<String?>(null)
+
+    /** Zähler für Links: ein neuerer Link ersetzt einen, der noch auf das Abmelden wartet. */
+    private var linkSeq = 0
 
     val features: SystemFeatures get() = SystemFeatures(_system.value?.features.orEmpty())
 
@@ -93,6 +103,41 @@ class SessionManager(
             is AppState.SignedOut -> s.conn
             AppState.Onboarding -> null
         }
+
+    /** Geöffneter Verbindungslink (ui-spec §1 „Verbindungslinks“, decisions 45). */
+    fun handleLink(raw: String) {
+        val seq = ++linkSeq
+        val s = _state.value
+        val where = when (s) {
+            AppState.Onboarding -> LinkRouting.Where.ONBOARDING
+            is AppState.SignedOut -> LinkRouting.Where.SIGN_IN_PAGE
+            is AppState.SignedIn -> LinkRouting.Where.SIGNED_IN
+        }
+        when (val d = LinkRouting.decide(raw, where, connection?.profile)) {
+            LinkRouting.Decision.ToOnboarding -> pendingPairing.value = raw
+            LinkRouting.Decision.DisconnectAndTake -> disconnectThenTake(raw, seq)
+            is LinkRouting.Decision.ShowError -> if (s is AppState.SignedOut) _state.value = s.copy(notice = Texts.error(d.error))
+            LinkRouting.Decision.ConfirmSwitch -> linkSwitch.value = raw
+            LinkRouting.Decision.Drop -> Unit
+        }
+    }
+
+    /** „Mit anderem System verbinden“ für den Link bestätigt: abmelden wie §1, dann Link ans Onboarding. */
+    fun confirmLinkSwitch() {
+        val raw = linkSwitch.value ?: return
+        linkSwitch.value = null
+        disconnectThenTake(raw, ++linkSeq)
+    }
+
+    fun cancelLinkSwitch() { linkSwitch.value = null }
+
+    private fun disconnectThenTake(raw: String, seq: Int) {
+        scope.launch {
+            disconnect()
+            // erst nach dem Aufräumen, sonst löscht disconnect() das Profil, das das Onboarding gerade anlegt
+            if (seq == linkSeq && _state.value == AppState.Onboarding) pendingPairing.value = raw
+        }
+    }
 
     init {
         profiles.load()?.let { p ->
@@ -128,10 +173,13 @@ class SessionManager(
             .build()
         val conn = Connection(profile, session, loader, dir)
         _state.value = if (tokens.load() != null) AppState.SignedIn(conn) else AppState.SignedOut(conn)
+        // Link, der während einer Prüfung im Onboarding gehalten wurde, darf nicht liegen bleiben
+        pendingPairing.value?.let { pendingPairing.value = null; handleLink(it) }
     }
 
     private fun onSessionEnded() {
         val conn = connection ?: return
+        linkSwitch.value = null
         _state.value = AppState.SignedOut(conn, Texts.get(R.string.session_expired))
     }
 
@@ -162,6 +210,7 @@ class SessionManager(
     /** Abmelden bzw. mit anderem System verbinden: alles zu diesem System wird gelöscht. */
     suspend fun disconnect() {
         val conn = connection
+        linkSwitch.value = null
         _state.value = AppState.Onboarding
         if (conn != null) {
             conn.session.client.dispatcher.cancelAll()

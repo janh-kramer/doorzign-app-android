@@ -38,8 +38,8 @@ class MainActivity : ComponentActivity() {
         if (uri.scheme != "doorzign") return
         when (uri.host) {
             "auth" -> if (uri.path == "/callback") { ssoCallbackSeen = true; container.sessions.handleSsoCallback(uri) }
-            // Roh weitergeben: auch ungültige Links müssen auf dem Willkommensbildschirm einen Fehler zeigen.
-            "edge", "cloud" -> container.sessions.pendingPairing.value = uri.toString()
+            // Einordnung je nach Zustand (Onboarding, Anmeldeseite, angemeldet) im SessionManager
+            "edge", "cloud" -> container.sessions.handleLink(uri.toString())
         }
     }
 }

@@ -1,6 +1,11 @@
 package de.doorzign.app.ui
 
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import de.doorzign.app.R
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.doorzign.app.data.AppState
@@ -20,4 +25,13 @@ fun AppRoot() {
         // Schlüssel = instanceId: ein neues System bekommt einen frischen Navigations- und ViewModel-Zustand
         is AppState.SignedIn -> androidx.compose.runtime.key(s.conn.profile.instanceId) { MainNav(s.conn) }
     }
+    // Verbindungslink auf ein anderes System, während man angemeldet ist (ui-spec §1, decisions 45): Bestätigung wie §8
+    val link by sessions.linkSwitch.collectAsStateWithLifecycle()
+    if (link != null && state is AppState.SignedIn) AlertDialog(
+        onDismissRequest = sessions::cancelLinkSwitch,
+        title = { Text(stringResource(R.string.settings_switch)) },
+        text = { Text(stringResource(R.string.settings_switch_confirm)) },
+        confirmButton = { TextButton(onClick = sessions::confirmLinkSwitch) { Text(stringResource(R.string.action_continue)) } },
+        dismissButton = { TextButton(onClick = sessions::cancelLinkSwitch) { Text(stringResource(R.string.action_cancel)) } },
+    )
 }
