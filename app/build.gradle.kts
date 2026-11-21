@@ -40,6 +40,11 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
+    testOptions {
+        // Robolectric lädt sein android-all-Jar nach maven.repo.local; im Wegwerf-Container wäre ~/.m2 jedes Mal leer.
+        // Im Gradle-Home (Volume doorzign-app-android-gradle) bleibt es erhalten.
+        unitTests.all { it.systemProperty("maven.repo.local", "${gradle.gradleUserHomeDir}/robolectric-m2") }
+    }
 }
 
 dependencies {
