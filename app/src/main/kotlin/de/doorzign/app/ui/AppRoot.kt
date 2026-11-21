@@ -1,5 +1,7 @@
 package de.doorzign.app.ui
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,7 +33,8 @@ fun AppRoot() {
         onDismissRequest = sessions::cancelLinkSwitch,
         title = { Text(stringResource(R.string.settings_switch_title)) },
         text = { Text(stringResource(R.string.settings_switch_confirm)) },
-        confirmButton = { TextButton(onClick = sessions::confirmLinkSwitch) { Text(stringResource(R.string.settings_switch_disconnect)) } },
+        confirmButton = { TextButton(onClick = sessions::confirmLinkSwitch,
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text(stringResource(R.string.settings_switch_disconnect)) } },
         dismissButton = { TextButton(onClick = sessions::cancelLinkSwitch) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

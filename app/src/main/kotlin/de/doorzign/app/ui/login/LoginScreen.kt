@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
@@ -194,7 +195,8 @@ fun LoginScreen(notice: String?) {
             onDismissRequest = { confirmSwitch = false },
             title = { Text(stringResource(R.string.settings_switch_title)) },
             text = { Text(stringResource(R.string.settings_switch_confirm)) },
-            confirmButton = { TextButton(onClick = { confirmSwitch = false; scope.launch { vm.disconnect() } }) { Text(stringResource(R.string.settings_switch_disconnect)) } },
+            confirmButton = { TextButton(onClick = { confirmSwitch = false; scope.launch { vm.disconnect() } },
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text(stringResource(R.string.settings_switch_disconnect)) } },
             dismissButton = { TextButton(onClick = { confirmSwitch = false }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
