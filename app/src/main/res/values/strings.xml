@@ -98,6 +98,7 @@
     <string name="role_admin">Administrator</string>
     <string name="role_user">Benutzer</string>
     <string name="settings_logout">Abmelden</string>
+    <string name="settings_logout_title">Abmelden?</string>
     <string name="settings_switch">Mit anderem System verbinden</string>
     <string name="settings_switch_title">Mit anderem System verbinden?</string>
     <string name="settings_switch_disconnect">Verbindung trennen</string>

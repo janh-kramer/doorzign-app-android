@@ -80,6 +80,7 @@
     <string name="role_admin">Administrator</string>
     <string name="role_user">User</string>
     <string name="settings_logout">Sign out</string>
+    <string name="settings_logout_title">Sign out?</string>
     <string name="settings_switch">Connect to another system</string>
     <string name="settings_switch_title">Connect to another system?</string>
     <string name="settings_switch_disconnect">Disconnect</string>

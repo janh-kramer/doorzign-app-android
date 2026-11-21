@@ -91,9 +91,15 @@ fun SettingsScreen(conn: Connection) {
     confirm?.let { what ->
         AlertDialog(
             onDismissRequest = { confirm = null },
-            title = { Text(stringResource(if (what == "logout") R.string.settings_logout else R.string.settings_switch_title)) },
+            title = { Text(stringResource(if (what == "logout") R.string.settings_logout_title else R.string.settings_switch_title)) },
             text = { Text(stringResource(R.string.settings_switch_confirm)) },
-            confirmButton = { TextButton(onClick = { confirm = null; scope.launch { c.sessions.disconnect() } }) { Text(stringResource(if (what == "logout") R.string.action_continue else R.string.settings_switch_disconnect)) } },
+            // Abmelden destruktiv wie iOS (Glossar)
+            confirmButton = {
+                TextButton(onClick = { confirm = null; scope.launch { c.sessions.disconnect() } },
+                    colors = if (what == "logout") ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error) else ButtonDefaults.textButtonColors()) {
+                    Text(stringResource(if (what == "logout") R.string.settings_logout else R.string.settings_switch_disconnect))
+                }
+            },
             dismissButton = { TextButton(onClick = { confirm = null }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
