@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Texte laut docs/ui-spec.md (Deutsch). Englisch folgt in values-en. -->
 <resources>
-    <string name="app_name" translatable="false">DoorZign</string>
+    <string name="app_name" translatable="false">Doorzign</string>
 
     <!-- Allgemein -->
     <string name="action_back">Zurück</string>
@@ -14,26 +14,26 @@
     <string name="status_online">Online</string>
     <string name="status_offline">Offline</string>
     <string name="status_unknown">Unbekannt</string>
-    <string name="system_edge" translatable="false">DoorZign Edge</string>
+    <string name="system_edge" translatable="false">Doorzign Edge</string>
     <string name="system_cloud" translatable="false">Zeitwart Cloud</string>
     <string name="compat_update">Bitte aktualisiere die App – dieses System benötigt eine neuere Version.</string>
     <string name="compat_incompatible">System nicht kompatibel.</string>
 
     <!-- Onboarding -->
-    <string name="welcome_title">Willkommen bei DoorZign</string>
+    <string name="welcome_title">Willkommen bei Doorzign</string>
     <string name="welcome_choose">Mit welchem System möchtest du dich verbinden?</string>
-    <string name="welcome_edge_title" translatable="false">DoorZign Edge</string>
+    <string name="welcome_edge_title" translatable="false">Doorzign Edge</string>
     <string name="welcome_edge_text">Lokale Installation über WLAN oder VPN</string>
     <string name="welcome_cloud_title" translatable="false">Zeitwart Cloud</string>
     <string name="welcome_cloud_text">Verbindung über das Internet</string>
     <string name="welcome_mock_title">Mock-Server (Entwicklung)</string>
     <string name="welcome_mock_text">Prism auf dem Entwicklungsrechner</string>
     <string name="edge_scan_title">QR-Code scannen</string>
-    <string name="edge_scan_text">In der Edge-Weboberfläche unter „DoorZign-App verbinden“</string>
-    <string name="edge_scan_hint">Richte die Kamera auf den QR-Code unter „DoorZign-App verbinden“.</string>
+    <string name="edge_scan_text">In der Edge-Weboberfläche unter „Doorzign-App verbinden“</string>
+    <string name="edge_scan_hint">Richte die Kamera auf den QR-Code unter „Doorzign-App verbinden“.</string>
     <string name="edge_search_title">Im Netzwerk suchen</string>
     <string name="edge_search_text">Gateways im selben Netzwerk finden</string>
-    <string name="edge_search_running">Suche nach DoorZign-Gateways …</string>
+    <string name="edge_search_running">Suche nach Doorzign-Gateways …</string>
     <string name="edge_address_title">Adresse eingeben</string>
     <string name="edge_address_text">IP-Adresse oder Hostname des Gateways</string>
     <string name="edge_address_label">Adresse</string>
@@ -45,7 +45,7 @@
     <string name="qr_allow_camera">Kamera erlauben</string>
     <string name="tofu_title">Zertifikat bestätigen</string>
     <string name="tofu_text">„%1$s“ meldet sich mit diesem Fingerprint:</string>
-    <string name="tofu_compare">Vergleiche ihn in der Edge-Weboberfläche unter „DoorZign-App verbinden“. Vertraue nur bei Übereinstimmung.</string>
+    <string name="tofu_compare">Vergleiche ihn in der Edge-Weboberfläche unter „Doorzign-App verbinden“. Vertraue nur bei Übereinstimmung.</string>
     <string name="tofu_trust">Vertrauen</string>
 
     <!-- Anmeldung -->
@@ -118,7 +118,7 @@
     <string name="type_image">Bild</string>
     <string name="type_calendar">Kalender</string>
     <string name="type_deactivated">Deaktiviert</string>
-    <string name="license_doorzign">Lizenz DoorZign</string>
+    <string name="license_doorzign">Doorzign-Lizenz</string>
     <string name="license_ical">Lizenz iCal Connect</string>
     <string name="license_none">Keine Lizenz</string>
     <string name="license_until">%1$s bis %2$s</string>
@@ -233,14 +233,14 @@
     <string name="err_mdns">Suche im Netzwerk fehlgeschlagen (%1$d)</string>
     <string name="err_image_too_large">Das Bild ist auch verkleinert zu groß für dieses System.</string>
     <string name="err_image_unreadable">Bild konnte nicht gelesen werden.</string>
-    <string name="pair_not_doorzign">Dieser QR-Code ist kein DoorZign-Verbindungscode.</string>
+    <string name="pair_not_doorzign">Dieser QR-Code ist kein Doorzign-Verbindungscode.</string>
     <string name="pair_no_address">QR-Code enthält keine Adresse</string>
     <string name="pair_bad_fingerprint">Ungültiger Fingerprint im QR-Code</string>
     <string name="pair_no_fingerprint">QR-Code enthält keinen Fingerprint</string>
     <string name="pair_fingerprint_count">Anzahl der Fingerprints passt nicht zu den Adressen</string>
     <string name="pair_no_instance">QR-Code enthält keine Installations-ID</string>
-    <string name="pair_not_pairing">Dieser QR-Code ist kein DoorZign-Verbindungscode.</string>
-    <string name="pair_unknown">Dieser QR-Code ist kein DoorZign-Verbindungscode.</string>
+    <string name="pair_not_pairing">Dieser QR-Code ist kein Doorzign-Verbindungscode.</string>
+    <string name="pair_unknown">Dieser QR-Code ist kein Doorzign-Verbindungscode.</string>
     <string name="pair_invalid_address">Ungültige Adresse</string>
     <string name="pair_https_only">Nur HTTPS-Adressen sind erlaubt</string>
     <string name="pair_empty_instance">Bitte gib eine Instanz ein</string>
