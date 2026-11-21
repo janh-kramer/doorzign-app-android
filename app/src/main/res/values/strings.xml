@@ -99,6 +99,8 @@
     <string name="role_user">Benutzer</string>
     <string name="settings_logout">Abmelden</string>
     <string name="settings_switch">Mit anderem System verbinden</string>
+    <string name="settings_switch_title">Mit anderem System verbinden?</string>
+    <string name="settings_switch_disconnect">Verbindung trennen</string>
     <string name="settings_switch_confirm">Zugangsdaten und zwischengespeicherte Daten werden gelöscht.</string>
     <string name="settings_app_version">App-Version</string>
     <string name="settings_imprint">Impressum</string>

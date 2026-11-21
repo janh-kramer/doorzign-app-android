@@ -91,9 +91,9 @@ fun SettingsScreen(conn: Connection) {
     confirm?.let { what ->
         AlertDialog(
             onDismissRequest = { confirm = null },
-            title = { Text(stringResource(if (what == "logout") R.string.settings_logout else R.string.settings_switch)) },
+            title = { Text(stringResource(if (what == "logout") R.string.settings_logout else R.string.settings_switch_title)) },
             text = { Text(stringResource(R.string.settings_switch_confirm)) },
-            confirmButton = { TextButton(onClick = { confirm = null; scope.launch { c.sessions.disconnect() } }) { Text(stringResource(R.string.action_continue)) } },
+            confirmButton = { TextButton(onClick = { confirm = null; scope.launch { c.sessions.disconnect() } }) { Text(stringResource(if (what == "logout") R.string.action_continue else R.string.settings_switch_disconnect)) } },
             dismissButton = { TextButton(onClick = { confirm = null }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }

@@ -81,6 +81,8 @@
     <string name="role_user">User</string>
     <string name="settings_logout">Sign out</string>
     <string name="settings_switch">Connect to another system</string>
+    <string name="settings_switch_title">Connect to another system?</string>
+    <string name="settings_switch_disconnect">Disconnect</string>
     <string name="settings_switch_confirm">Credentials and cached data will be deleted.</string>
     <string name="settings_app_version">App version</string>
     <string name="settings_imprint">Legal notice</string>

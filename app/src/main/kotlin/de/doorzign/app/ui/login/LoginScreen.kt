@@ -192,9 +192,9 @@ fun LoginScreen(notice: String?) {
     if (confirmSwitch) {
         AlertDialog(
             onDismissRequest = { confirmSwitch = false },
-            title = { Text(stringResource(R.string.settings_switch)) },
+            title = { Text(stringResource(R.string.settings_switch_title)) },
             text = { Text(stringResource(R.string.settings_switch_confirm)) },
-            confirmButton = { TextButton(onClick = { confirmSwitch = false; scope.launch { vm.disconnect() } }) { Text(stringResource(R.string.action_continue)) } },
+            confirmButton = { TextButton(onClick = { confirmSwitch = false; scope.launch { vm.disconnect() } }) { Text(stringResource(R.string.settings_switch_disconnect)) } },
             dismissButton = { TextButton(onClick = { confirmSwitch = false }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }

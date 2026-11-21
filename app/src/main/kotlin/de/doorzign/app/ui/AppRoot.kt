@@ -29,9 +29,9 @@ fun AppRoot() {
     val link by sessions.linkSwitch.collectAsStateWithLifecycle()
     if (link != null && state is AppState.SignedIn) AlertDialog(
         onDismissRequest = sessions::cancelLinkSwitch,
-        title = { Text(stringResource(R.string.settings_switch)) },
+        title = { Text(stringResource(R.string.settings_switch_title)) },
         text = { Text(stringResource(R.string.settings_switch_confirm)) },
-        confirmButton = { TextButton(onClick = sessions::confirmLinkSwitch) { Text(stringResource(R.string.action_continue)) } },
+        confirmButton = { TextButton(onClick = sessions::confirmLinkSwitch) { Text(stringResource(R.string.settings_switch_disconnect)) } },
         dismissButton = { TextButton(onClick = sessions::cancelLinkSwitch) { Text(stringResource(R.string.action_cancel)) } },
     )
 }
