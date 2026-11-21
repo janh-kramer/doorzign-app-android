@@ -243,6 +243,11 @@
     <string name="sched_err_until">End is before the start</string>
     <string name="settings_backend">Backend %1$s</string>
     <string name="image_library">From library</string>
+    <string name="image_rotate_title">Rotate image</string>
+    <string name="image_rotate_hint">Rotate the image the way it should appear on the display.</string>
+    <string name="image_rotate_left">Rotate left</string>
+    <string name="image_rotate_right">Rotate right</string>
+    <string name="image_upload">Upload</string>
     <string name="library_title">Choose image</string>
     <string name="library_empty">No images yet.</string>
 </resources>

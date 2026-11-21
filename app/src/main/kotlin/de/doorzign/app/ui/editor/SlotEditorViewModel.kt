@@ -1,6 +1,7 @@
 package de.doorzign.app.ui.editor
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -126,14 +127,46 @@ class SlotEditorViewModel(
 
     fun clearError() { error.value = null }
 
-    /** Bild aus Kamera oder Galerie: verkleinern, als JPEG hochladen, `mediaId` übernehmen. */
+    /** Schritt „Bild drehen“ (decisions 44): Originalbytes, Vorschau mit angewendeter EXIF-Ausrichtung, Vierteldrehungen (im Uhrzeigersinn). */
+    class RotateStep(val bytes: ByteArray, val basePreview: Bitmap, val turns: Int, val preview: Bitmap)
+
+    val rotateStep = MutableStateFlow<RotateStep?>(null)
+
+    /** Bild aus Kamera oder Galerie: lesen und den Dreh-Schritt öffnen – hochgeladen wird erst mit „Hochladen“. */
     fun pickImage(context: Context, uri: Uri) {
         uploading.value = true
         error.value = null
         viewModelScope.launch {
             try {
-                val bytes = ImagePrep.prepare(context, uri, mediaMaxBytes())
-                val media = conn.session.uploadMedia(bytes, "image/jpeg", "foto.jpg")
+                val bytes = ImagePrep.read(context, uri)
+                val preview = ImagePrep.preview(bytes)
+                rotateStep.value = RotateStep(bytes, preview, 0, preview)
+            } catch (e: Exception) {
+                error.value = Texts.get(R.string.err_image_unreadable)
+            } finally {
+                uploading.value = false
+            }
+        }
+    }
+
+    /** [delta] = -1 (links) oder +1 (rechts), je 90°. */
+    fun rotateImage(delta: Int) = rotateStep.update { s ->
+        s?.let { val t = Math.floorMod(it.turns + delta, 4); RotateStep(it.bytes, it.basePreview, t, ImagePrep.rotated(it.basePreview, t)) }
+    }
+
+    /** „Abbrechen“: Auswahl verwerfen, kein Request. */
+    fun cancelRotation() { rotateStep.value = null }
+
+    /** „Hochladen“: Drehung in die Pixel schreiben, verkleinern, `POST /media`, `mediaId` übernehmen. */
+    fun confirmRotation() {
+        val step = rotateStep.value ?: return
+        rotateStep.value = null
+        uploading.value = true
+        error.value = null
+        viewModelScope.launch {
+            try {
+                val p = ImagePrep.prepare(step.bytes, step.turns, mediaMaxBytes())
+                val media = conn.session.uploadMedia(p.bytes, p.mime, p.fileName)
                 updateImage { it.copy(mediaId = media.id) }
             } catch (e: Exception) {
                 error.value = if (e is ApiException || e is ImagePrep.TooLarge) Texts.error(e) else Texts.get(R.string.err_image_unreadable)

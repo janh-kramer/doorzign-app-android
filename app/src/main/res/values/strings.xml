@@ -273,6 +273,11 @@
 
     <!-- Medienbibliothek (ui-spec §4, Feature media.library) -->
     <string name="image_library">Aus Bibliothek</string>
+    <string name="image_rotate_title">Bild drehen</string>
+    <string name="image_rotate_hint">Dreh das Bild so, wie es auf dem Display stehen soll.</string>
+    <string name="image_rotate_left">Links drehen</string>
+    <string name="image_rotate_right">Rechts drehen</string>
+    <string name="image_upload">Hochladen</string>
     <string name="library_title">Bild auswählen</string>
     <string name="library_empty">Noch keine Bilder vorhanden.</string>
 </resources>

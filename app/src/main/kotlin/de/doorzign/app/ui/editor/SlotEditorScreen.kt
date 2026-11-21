@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.items
 import coil3.compose.AsyncImage
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +33,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.RotateLeft
+import androidx.compose.material.icons.filled.RotateRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,6 +66,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -286,6 +290,7 @@ private fun ImageEditor(img: SlotContent.Image, vm: SlotEditorViewModel) {
         }
         LibraryDialog(vm)
     }
+    RotateDialog(vm)
     Text(stringResource(R.string.image_fit), style = MaterialTheme.typography.labelLarge)
     SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
         SegmentedButton(img.fit == SlotContent.Fit.FILL, { vm.updateImage { it.copy(fit = SlotContent.Fit.FILL) } },
@@ -298,6 +303,36 @@ private fun ImageEditor(img: SlotContent.Image, vm: SlotEditorViewModel) {
         Text(stringResource(R.string.image_dither), Modifier.weight(1f))
         Switch(img.dither, { v -> vm.updateImage { it.copy(dither = v) } })
     }
+}
+
+/** Schritt „Bild drehen“ nach Kamera/Galerie (ui-spec „Bild“, decisions 44); „Abbrechen“ verwirft ohne Request. */
+@Composable
+private fun RotateDialog(vm: SlotEditorViewModel) {
+    val step by vm.rotateStep.collectAsStateWithLifecycle()
+    val s = step ?: return
+    val bitmap = remember(s.preview) { s.preview.asImageBitmap() }
+    AlertDialog(
+        onDismissRequest = vm::cancelRotation,
+        title = { Text(stringResource(R.string.image_rotate_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.image_rotate_hint), style = MaterialTheme.typography.bodyMedium)
+                Box(Modifier.fillMaxWidth().height(280.dp).background(Color(0x0F000000)), contentAlignment = Alignment.Center) {
+                    Image(bitmap, null, Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
+                    FilledTonalButton(onClick = { vm.rotateImage(-1) }) {
+                        Icon(Icons.Default.RotateLeft, null); Spacer(Modifier.size(6.dp)); Text(stringResource(R.string.image_rotate_left))
+                    }
+                    FilledTonalButton(onClick = { vm.rotateImage(1) }) {
+                        Icon(Icons.Default.RotateRight, null); Spacer(Modifier.size(6.dp)); Text(stringResource(R.string.image_rotate_right))
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = vm::confirmRotation) { Text(stringResource(R.string.image_upload)) } },
+        dismissButton = { TextButton(onClick = vm::cancelRotation) { Text(stringResource(R.string.action_cancel)) } },
+    )
 }
 
 /** Raster aus `GET /media`; Miniaturen über `GET /media/{id}` mit dem Bildlader der Sitzung (Bearer). */
