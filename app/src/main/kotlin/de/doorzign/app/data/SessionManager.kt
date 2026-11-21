@@ -16,7 +16,6 @@ import de.doorzign.app.core.AppInfo
 import de.doorzign.app.core.Compatibility
 import de.doorzign.app.core.ConnectionProfile
 import de.doorzign.app.core.Fingerprints
-import de.doorzign.app.core.PairingUri
 import de.doorzign.app.core.Pkce
 import de.doorzign.app.core.Session
 import de.doorzign.app.core.Sso
@@ -83,7 +82,8 @@ class SessionManager(
     val sso: StateFlow<SsoStatus> = _sso.asStateFlow()
 
     /** QR-/Deep-Link-Inhalt, der vom Onboarding übernommen werden soll. */
-    val pendingPairing = MutableStateFlow<PairingUri?>(null)
+    /** Roher Verbindungslink (`doorzign://edge|cloud…`) aus einem Intent; das Onboarding prüft und meldet Fehler. */
+    val pendingPairing = MutableStateFlow<String?>(null)
 
     val features: SystemFeatures get() = SystemFeatures(_system.value?.features.orEmpty())
 

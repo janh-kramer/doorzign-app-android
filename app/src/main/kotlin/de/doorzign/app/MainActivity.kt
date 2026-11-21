@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import de.doorzign.app.core.PairingUri
 import de.doorzign.app.ui.AppRoot
 import de.doorzign.app.ui.theme.DoorZignTheme
 
@@ -39,8 +38,8 @@ class MainActivity : ComponentActivity() {
         if (uri.scheme != "doorzign") return
         when (uri.host) {
             "auth" -> if (uri.path == "/callback") { ssoCallbackSeen = true; container.sessions.handleSsoCallback(uri) }
-            "edge", "cloud" -> runCatching { PairingUri.parse(uri.toString()) }
-                .onSuccess { container.sessions.pendingPairing.value = it }
+            // Roh weitergeben: auch ungültige Links müssen auf dem Willkommensbildschirm einen Fehler zeigen.
+            "edge", "cloud" -> container.sessions.pendingPairing.value = uri.toString()
         }
     }
 }

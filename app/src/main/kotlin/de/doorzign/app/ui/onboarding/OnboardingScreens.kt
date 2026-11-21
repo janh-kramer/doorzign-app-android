@@ -90,8 +90,9 @@ fun OnboardingFlow() {
     val pending by sessions.pendingPairing.collectAsState()
 
     // Deep Link / QR aus einer anderen App übernehmen
-    LaunchedEffect(pending) {
-        pending?.let { sessions.pendingPairing.value = null; vm.onPairing(it) }
+    // (erst wenn keine Prüfung läuft, sonst ginge der Link verloren). Fehler zeigt der aktuelle Schritt an.
+    LaunchedEffect(pending, state.busy) {
+        if (!state.busy) pending?.let { sessions.pendingPairing.value = null; vm.onQr(it) }
     }
 
     NavHost(nav, startDestination = R0.WELCOME) {
