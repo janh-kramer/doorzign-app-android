@@ -46,7 +46,16 @@ class LinkRoutingTest {
 
     @Test fun angemeldetUngueltigerLinkWirdVerworfen() {
         assertEquals(Decision.Drop, LinkRouting.decide(invalid, Where.SIGNED_IN, edge))
-        assertEquals(Decision.Drop, LinkRouting.decide("doorzign://cloud?u=https://zeitwart.example", Where.SIGNED_IN, edge))
+    }
+
+    /** `doorzign://cloud` ist überall gültig, auch solange der Cloud-QR-Knopf ausgeblendet ist (CLOUD_QR = false). */
+    @Test fun cloudLinksSindUeberallGueltig() {
+        val link = "doorzign://cloud?u=https%3A%2F%2Fandere.zeitwart.de"
+        assertEquals(Decision.ToOnboarding, LinkRouting.decide(link, Where.ONBOARDING, null))
+        assertEquals(Decision.DisconnectAndTake, LinkRouting.decide(link, Where.SIGN_IN_PAGE, cloud))
+        assertEquals(Decision.ConfirmSwitch, LinkRouting.decide(link, Where.SIGNED_IN, edge))
+        assertEquals(Decision.ConfirmSwitch, LinkRouting.decide(link, Where.SIGNED_IN, cloud))
+        assertEquals(Decision.Drop, LinkRouting.decide("doorzign://cloud?u=https://zeitwart.example/", Where.SIGNED_IN, cloud))
     }
 
     @Test fun cloudGleicheBasisUrlNormalisiert() {

@@ -40,7 +40,7 @@ class PairingUriTest {
     }
 
     @Test fun pfadWirdEntfernt() {
-        val p = PairingUri.parse("doorzign://cloud?u=https%3A%2F%2FFirma.zeitwart.de%2F", allowCloud = true) as PairingUri.Cloud
+        val p = PairingUri.parse("doorzign://cloud?u=https%3A%2F%2FFirma.zeitwart.de%2F") as PairingUri.Cloud
         assertEquals("https://firma.zeitwart.de", p.origin)
     }
 

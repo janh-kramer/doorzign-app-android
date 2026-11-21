@@ -26,11 +26,14 @@ sealed interface PairingUri {
     data class Cloud(val origin: String, val name: String?) : PairingUri
 
     companion object {
-        /** Zeitwart bietet (noch) keinen Verbindungs-QR an – bis dahin werden `doorzign://cloud`-Codes abgelehnt. */
+        /**
+         * Zeitwart bietet (noch) keinen Verbindungs-QR an: steuert nur den Scan-Knopf im Cloud-Schritt. Der Parser nimmt
+         * `doorzign://cloud` immer an (ui-spec §1 Schritt 3, Deep Links).
+         */
         const val CLOUD_QR = false
 
         /** Parst den QR-Inhalt. Wirft [PairingException] bei ungültigem Inhalt. */
-        fun parse(raw: String, allowCloud: Boolean = CLOUD_QR): PairingUri {
+        fun parse(raw: String): PairingUri {
             val uri = runCatching { URI(raw.trim()) }.getOrElse { fail(PairingException.Reason.NOT_DOORZIGN) }
             ensure(uri.scheme.equals("doorzign", ignoreCase = true), PairingException.Reason.NOT_DOORZIGN)
             val params = parseQuery(uri.rawQuery.orEmpty())
@@ -48,7 +51,6 @@ sealed interface PairingUri {
                     Edge(origins, fps, id, params["n"]?.firstOrNull())
                 }
                 "cloud" -> {
-                    ensure(allowCloud, PairingException.Reason.UNKNOWN_CODE)
                     val origin = params["u"]?.firstOrNull() ?: fail(PairingException.Reason.NO_ADDRESS)
                     Cloud(normalizeOrigin(origin), params["n"]?.firstOrNull())
                 }
