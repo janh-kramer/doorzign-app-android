@@ -3,6 +3,8 @@ package de.doorzign.app.ui.displays
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -34,6 +36,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import coil3.request.transformations
+import coil3.size.Size
+import de.doorzign.app.data.AreaScale
 import de.doorzign.app.R
 import de.doorzign.app.api.model.Display
 import de.doorzign.app.core.BatteryState
@@ -67,15 +72,22 @@ fun SlotPreview(conn: Connection, displayId: String, slot: Int, etag: String?, m
         return
     }
     val url = conn.previewUrl(displayId, slot)
-    val key = "$url#$tag"
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current).data(url).memoryCacheKey(key).diskCacheKey(key)
-            .placeholderMemoryCacheKey(lastKeys[url]).listener(onSuccess = { _, _ -> lastKeys[url] = key }).build(),
-        imageLoader = conn.imageLoader,
-        contentDescription = cd,
-        contentScale = ContentScale.Fit,
-        modifier = shaped,
-    )
+    // Flächenmittelnd auf die Zielpixel (decisions 47): Original dekodieren (kein Subsampling), dann AreaScale
+    BoxWithConstraints(shaped) {
+        val w = constraints.maxWidth
+        val h = constraints.maxHeight
+        val sized = "$url@${w}x$h"
+        val key = "$sized#$tag"
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(url).memoryCacheKey(key).diskCacheKey("$url#$tag")
+                .size(Size.ORIGINAL).transformations(AreaScale.Fit(w, h))
+                .placeholderMemoryCacheKey(lastKeys[sized]).listener(onSuccess = { _, _ -> lastKeys[sized] = key }).build(),
+            imageLoader = conn.imageLoader,
+            contentDescription = cd,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
 }
 
 @Composable

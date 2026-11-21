@@ -55,6 +55,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -65,6 +66,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.foundation.layout.BoxWithConstraints
+import de.doorzign.app.data.AreaScale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.ui.platform.LocalContext
@@ -174,10 +180,19 @@ private fun PreviewBox(vm: SlotEditorViewModel) {
     val busy by vm.previewBusy.collectAsStateWithLifecycle()
     val err by vm.previewError.collectAsStateWithLifecycle()
     val stale by vm.previewStale.collectAsStateWithLifecycle()
-    val bitmap = remember(png) { png?.let { BitmapFactory.decodeByteArray(it, 0, it.size)?.asImageBitmap() } }
-    Box(Modifier.fillMaxWidth().aspectRatio(4f / 3f).background(Color(0xFFEEEEEE)), contentAlignment = Alignment.Center) {
-        if (bitmap != null) Image(bitmap, stringResource(R.string.editor_preview), Modifier.fillMaxSize().alpha(if (stale) 0.35f else 1f),
-            contentScale = ContentScale.Fit)
+    BoxWithConstraints(Modifier.fillMaxWidth().aspectRatio(4f / 3f).background(Color(0xFFEEEEEE)), contentAlignment = Alignment.Center) {
+        // Flächenmittelnd auf die Zielpixel verkleinern (decisions 47), nicht beim Zeichnen bilinear
+        val w = constraints.maxWidth
+        val h = constraints.maxHeight
+        val bitmap by produceState<ImageBitmap?>(null, png, w, h) {
+            value = png?.let { bytes ->
+                withContext(Dispatchers.Default) {
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.let { AreaScale.fit(it, w, h).asImageBitmap() }
+                }
+            }
+        }
+        bitmap?.let { Image(it, stringResource(R.string.editor_preview), Modifier.fillMaxSize().alpha(if (stale) 0.35f else 1f),
+            contentScale = ContentScale.Fit) }
         when {
             stale -> Text(stringResource(R.string.editor_preview_after_shorten), style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f), RoundedCornerShape(4.dp)).padding(8.dp))
