@@ -61,6 +61,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import de.doorzign.app.R
 import de.doorzign.app.api.model.Slot
 import de.doorzign.app.core.Level
+import de.doorzign.app.core.shownName
 import de.doorzign.app.core.SlotContent
 import de.doorzign.app.data.Connection
 import de.doorzign.app.ui.common.FullScreenError
@@ -104,7 +105,7 @@ fun DisplayDetailScreen(
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
-                title = { Text(detail?.display?.name ?: "") },
+                title = { Text(detail?.display?.shownName ?: "") },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.action_back)) } },
                 actions = {
                     if (detail?.level == Level.EDIT) {

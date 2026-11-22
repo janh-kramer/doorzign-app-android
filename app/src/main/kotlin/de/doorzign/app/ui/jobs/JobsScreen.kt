@@ -31,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import de.doorzign.app.R
 import de.doorzign.app.api.model.Job
 import de.doorzign.app.core.ApiException
+import de.doorzign.app.core.DisplayNames
 import de.doorzign.app.core.JobStates
 import de.doorzign.app.core.apiCall
 import de.doorzign.app.data.Connection
@@ -48,13 +49,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-data class JobList(val jobs: List<Job>, val incomplete: Boolean)
+/** [macs]: displayId → MAC, für Aufträge mit leerem Displaynamen (decisions 48). */
+data class JobList(val jobs: List<Job>, val incomplete: Boolean, val macs: Map<String, String> = emptyMap())
 
 class JobsViewModel(private val conn: Connection, private val displayId: String?) : ViewModel() {
     val state = MutableStateFlow<Loadable<JobList>>(Loadable.Loading)
     val refreshing = MutableStateFlow(false)
     val transient = MutableStateFlow<String?>(null)
     private var openSince: Long? = null
+    private var macs: Map<String, String> = emptyMap()
 
     fun refresh(user: Boolean = false) {
         if (user) refreshing.value = true
@@ -62,7 +65,11 @@ class JobsViewModel(private val conn: Connection, private val displayId: String?
             try {
                 val list = if (displayId != null) JobList(apiCall { conn.api.jobs.listDisplayJobs(displayId) }.`data`, false)
                     else apiCall { conn.api.jobs.listJobs() }.let { JobList(it.`data`, it.incomplete == true) }
-                state.value = Loadable.Ready(list)
+                if (displayId == null && list.jobs.any { it.displayName.isNullOrBlank() && it.displayId !in macs }) {
+                    // Job liefert keine MAC; nur bei Bedarf nachladen, Fehler hier nicht melden
+                    macs = try { apiCall { conn.api.displays.listDisplays() }.`data`.associate { it.id to it.mac } } catch (_: ApiException) { macs }
+                }
+                state.value = Loadable.Ready(list.copy(macs = macs))
                 transient.value = null
                 val open = list.jobs.any { JobStates.isOpen(it.status.value) }
                 openSince = if (open) openSince ?: System.currentTimeMillis() else null
@@ -106,7 +113,7 @@ fun JobsScreen(conn: Connection, displayId: String?, onBack: (() -> Unit)?) {
                         }
                         if (s.value.jobs.isEmpty()) item { Text(stringResource(R.string.jobs_empty), Modifier.padding(24.dp)) }
                         items(s.value.jobs, key = { it.id }) { job ->
-                            JobRow(job, showDisplay = displayId == null)
+                            JobRow(job, showDisplay = displayId == null, mac = s.value.macs[job.displayId] ?: job.displayId)
                             HorizontalDivider()
                         }
                     }
@@ -117,7 +124,7 @@ fun JobsScreen(conn: Connection, displayId: String?, onBack: (() -> Unit)?) {
 }
 
 @Composable
-private fun JobRow(job: Job, showDisplay: Boolean) {
+private fun JobRow(job: Job, showDisplay: Boolean, mac: String) {
     val status = job.status.value
     val color = when (status) {
         "done" -> StatusColors.Ok
@@ -126,7 +133,7 @@ private fun JobRow(job: Job, showDisplay: Boolean) {
         else -> StatusColors.Warn
     }
     ListItem(
-        overlineContent = if (showDisplay) ({ Text(job.displayName ?: job.displayId) }) else null,
+        overlineContent = if (showDisplay) ({ Text(DisplayNames.shown(job.displayName, mac)) }) else null,
         headlineContent = { Text(jobTypeLabel(job.type) + (job.slot?.let { " · " + stringResource(R.string.slot_n, it) } ?: "")) },
         supportingContent = {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {

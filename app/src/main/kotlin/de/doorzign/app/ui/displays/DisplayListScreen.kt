@@ -42,6 +42,8 @@ import androidx.lifecycle.viewModelScope
 import de.doorzign.app.R
 import de.doorzign.app.api.model.Display
 import de.doorzign.app.core.ApiException
+import de.doorzign.app.core.DisplayNames
+import de.doorzign.app.core.shownName
 import de.doorzign.app.core.BatteryState
 import de.doorzign.app.core.DisplayStatus
 import de.doorzign.app.core.apiCall
@@ -87,7 +89,7 @@ class DisplayListViewModel(private val conn: Connection) : ViewModel() {
     val visible: StateFlow<Loadable<List<Display>>> = combine(all, query, filter) { l, q, f ->
         when (l) {
             is Loadable.Ready -> Loadable.Ready(l.value.filter { d ->
-                f.matches(d) && (q.isBlank() || d.name.contains(q, true) || d.location.orEmpty().contains(q, true) || d.mac.contains(q, true))
+                f.matches(d) && DisplayNames.matches(d, q)
             })
             else -> l
         }
@@ -98,7 +100,7 @@ class DisplayListViewModel(private val conn: Connection) : ViewModel() {
         if (userInitiated) refreshing.value = true
         viewModelScope.launch {
             try {
-                val list = apiCall { conn.api.displays.listDisplays() }.`data`.sortedWith(compareBy(collator) { it.name })
+                val list = apiCall { conn.api.displays.listDisplays() }.`data`.sortedWith(compareBy(collator) { it.shownName })
                 all.value = Loadable.Ready(list)
                 transientError.value = null
             } catch (e: ApiException) {
@@ -170,7 +172,7 @@ private fun DisplayRow(conn: Connection, d: Display, onClick: () -> Unit) {
     ) {
         SlotPreview(conn, d.id, d.activeSlot, d.activePreviewEtag(), Modifier.width(96.dp).aspectRatio(4f / 3f))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(d.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(d.shownName, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             d.location?.takeIf { it.isNotBlank() }?.let {
                 Text(it, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
